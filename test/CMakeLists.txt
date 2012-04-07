@@ -2,6 +2,8 @@ ENABLE_TESTING()
 FIND_PACKAGE(GTest REQUIRED)
 INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
 
-ADD_EXECUTABLE(multialn_test SequenceDetails.cpp)
+ADD_EXECUTABLE(multialn_test
+    SequenceDetails.cpp
+)
 TARGET_LINK_LIBRARIES(multialn_test multialn ${GTEST_BOTH_LIBRARIES})
 

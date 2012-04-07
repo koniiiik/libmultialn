@@ -1,11 +1,7 @@
 #include <string>
+
 #include <SequenceDetails.h>
 
-
-SequenceDetails::~SequenceDetails()
-{
-    delete this->sequence;
-}
 
 size_t SequenceDetails::sequenceToAlignment(size_t index) const
 {

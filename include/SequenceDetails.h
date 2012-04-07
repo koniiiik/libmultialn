@@ -1,4 +1,6 @@
 #include <string>
+#include <memory>
+
 #include <BitSequence.h>
 
 
@@ -13,7 +15,7 @@ class SequenceDetails
         size_t start, size, src_size;
         // true if from reverse-complement source
         bool reverse;
-        cds_static::BitSequence * sequence;
+        std::shared_ptr<cds_static::BitSequence> sequence;
 
 
     public:
@@ -23,7 +25,6 @@ class SequenceDetails
             start(_start), size(_size), reverse(_reverse),
             src_size(_src_size), sequence(bseq)
             {};
-        ~SequenceDetails();
 
         /*
         ** Given a position on the whole sequence returns the position in

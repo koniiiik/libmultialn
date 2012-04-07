@@ -5,6 +5,7 @@ PROJECT(libmultialn)
 OPTION(ENABLE_TEST "Enable unit tests" OFF)
 
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++0x")
 
 # We need to extend CMAKE_MODULE_PATH to our PROJECT_SOURCE_DIR since we
 # hold the FindLibCDS.cmake file and the project itself doesn't ship

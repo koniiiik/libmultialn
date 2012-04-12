@@ -1,11 +1,11 @@
+#ifndef SEQUENCEDETAILS_H
+#define SEQUENCEDETAILS_H
+
 #include <string>
 #include <memory>
 
 #include <BitSequence.h>
 
-
-#ifndef SEQUENCEDETAILS_H
-#define SEQUENCEDETAILS_H
 
 class SequenceDetails
 {

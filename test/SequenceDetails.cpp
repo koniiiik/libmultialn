@@ -2,6 +2,8 @@
 #include <SequenceDetails.h>
 #include <BitSequence.h>
 
+#include "SequenceGenerator.h"
+
 
 namespace
 {
@@ -11,16 +13,14 @@ namespace
     {
         protected:
 
-            SequenceDetails * forward;
+            SequenceDetails *forward;
 
             virtual void SetUp()
             {
                 // equals 11011110101011011011111011101111; libcds stores
                 // the sequence little-endian, which means the bit string
                 // stored is 11110111011111011011010101111011
-                uint32_t a = 0xDEADBEEF;
-                cds_static::BitSequence *seq = new cds_static::BitSequenceRRR(&a, 32);
-                forward = new SequenceDetails(47, seq->countOnes(), false, 94, seq);
+                forward = GenerateSequence<uint32_t>(47, 84, false, 0xDEADBEEF);
             }
 
             virtual void TearDown()

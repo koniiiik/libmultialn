@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <SequenceDetails.h>
 #include <BitSequence.h>
+#include <MultialnConstants.h>
 
 #include "SequenceGenerator.h"
 
@@ -40,13 +41,13 @@ namespace
 
         // If we're asking for a position in this alignment containing a
         // 1, we should get the exact position match.
-        EXPECT_EQ(51, forward->alignmentToSequenceBegin(5));
-        EXPECT_EQ(51, forward->alignmentToSequenceEnd(5));
+        EXPECT_EQ(51, forward->alignmentToSequence(5, INTERVAL_BEGIN));
+        EXPECT_EQ(51, forward->alignmentToSequence(5, INTERVAL_END));
 
         // Otherwise the match should be the first position to the left or
         // to the right.
-        EXPECT_EQ(51, forward->alignmentToSequenceBegin(4));
-        EXPECT_EQ(49, forward->alignmentToSequenceEnd(4));
+        EXPECT_EQ(51, forward->alignmentToSequence(4, INTERVAL_BEGIN));
+        EXPECT_EQ(49, forward->alignmentToSequence(4, INTERVAL_END));
     }
 
 }  // namespace

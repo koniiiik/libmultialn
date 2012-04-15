@@ -5,6 +5,7 @@
 #include <memory>
 
 #include <BitSequence.h>
+#include <MultialnConstants.h>
 
 
 class SequenceDetails
@@ -24,18 +25,14 @@ class SequenceDetails
         size_t sequenceToAlignment(size_t index) const;
 
         /*
-        ** Given a position in this alignment finds the first position
-        ** in the whole sequence occurring right of or at the given
-        ** position in this alignment.
+        ** Given a position in this alignment finds the appropriate
+        ** position in this alignment. Depending on whether we are
+        ** searching for the beginning or the end of an interval, we
+        ** find the first filled position in this alignment to the right
+        ** or to the left respectively.
         */
-        size_t alignmentToSequenceBegin(size_t index) const;
-
-        /*
-        ** Given a position in this alignment finds the first position
-        ** in the whole sequence occurring left of or at the given
-        ** position in this alignment.
-        */
-        size_t alignmentToSequenceEnd(size_t index) const;
+        size_t alignmentToSequence(size_t index,
+                IntervalBoundary boundary=INTERVAL_BEGIN) const;
 
         size_t rank(size_t index) const;
         size_t select(size_t index) const;

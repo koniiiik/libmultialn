@@ -47,7 +47,7 @@ namespace
         // Otherwise the match should be the first position to the left or
         // to the right.
         EXPECT_EQ(51, forward->alignmentToSequence(4, INTERVAL_BEGIN));
-        EXPECT_EQ(49, forward->alignmentToSequence(4, INTERVAL_END));
+        EXPECT_EQ(50, forward->alignmentToSequence(4, INTERVAL_END));
     }
 
 }  // namespace

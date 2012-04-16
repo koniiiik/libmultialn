@@ -38,6 +38,21 @@ const size_t AlignmentBlock::mapPositionToInformant(const size_t pos,
     return inf->alignmentToSequence(alignment_pos, boundary);
 }
 
+const AlignmentBlock::Mapping * AlignmentBlock::mapPositionToAll(const size_t pos,
+        const IntervalBoundary boundary) const
+{
+    Mapping * mapping = new Mapping;
+    for (Container::const_iterator it = this->sequences_.begin();
+            it != this->sequences_.end(); ++it)
+    {
+        if (it->first == (*this->reference_name_))
+            continue;
+        (*mapping)[it->first] = this->mapPositionToInformant(pos, it->first,
+                boundary);
+    }
+    return mapping;
+}
+
 const SequenceDetails * AlignmentBlock::getSequence(const std::string &name) const
 {
     Container::const_iterator it = this->sequences_.find(name);

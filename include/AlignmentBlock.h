@@ -20,6 +20,8 @@ class SequenceDoesNotExist: public std::exception
 class AlignmentBlock
 {
     public:
+        typedef std::map<std::string, size_t> Mapping;
+
         AlignmentBlock(const std::string *reference_name):
             reference_name_(reference_name)
         { }
@@ -34,6 +36,8 @@ class AlignmentBlock
 
         const size_t mapPositionToInformant(const size_t pos,
                 const std::string &informant,
+                const IntervalBoundary boundary=INTERVAL_BEGIN) const;
+        const Mapping * mapPositionToAll(const size_t pos,
                 const IntervalBoundary boundary=INTERVAL_BEGIN) const;
 
         const SequenceDetails * getSequence(const std::string &name) const;

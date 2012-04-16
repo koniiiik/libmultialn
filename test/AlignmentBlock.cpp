@@ -90,4 +90,31 @@ namespace
         EXPECT_EQ(72, block->mapPositionToInformant(64, "informant2"));
     }
 
+    TEST_F(AlignmentBlockTest, TestMultiMap)
+    {
+        block->addSequence("reference", seq1);
+        block->addSequence("informant1", seq2);
+
+        // The result of mapPositionToAll should be a map containing only
+        // informant1.
+        const AlignmentBlock::Mapping * m = block->mapPositionToAll(48);
+        ASSERT_EQ(1, m->size());
+        ASSERT_EQ(1, m->count("informant1"));
+        ASSERT_EQ(0, m->count("informant2"));
+        ASSERT_TRUE(m->end() != m->find("informant1"));
+        ASSERT_TRUE(m->end() == m->find("informant2"));
+        ASSERT_EQ(48, m->find("informant1")->second);
+
+        block->addSequence("informant2", seq3);
+
+        m = block->mapPositionToAll(55);
+        ASSERT_EQ(2, m->size());
+        ASSERT_EQ(1, m->count("informant1"));
+        ASSERT_EQ(1, m->count("informant2"));
+        ASSERT_TRUE(m->end() != m->find("informant1"));
+        ASSERT_TRUE(m->end() != m->find("informant2"));
+        ASSERT_EQ(59, m->find("informant1")->second);
+        ASSERT_EQ(63, m->find("informant2")->second);
+    }
+
 }  // namespace

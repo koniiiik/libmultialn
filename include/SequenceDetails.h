@@ -3,10 +3,20 @@
 
 #include <string>
 #include <memory>
+#include <exception>
 
 #include <BitSequence.h>
 #include <MultialnConstants.h>
 
+
+class OutOfSequence: public std::exception
+{
+    public:
+        OutOfSequence() throw(): exception() {};
+        OutOfSequence(const OutOfSequence &other) throw():
+            exception(other)
+        { }
+};
 
 class SequenceDetails
 {
@@ -20,7 +30,8 @@ class SequenceDetails
 
         /*
         ** Given a position on the whole sequence returns the position in
-        ** this alignment.
+        ** this alignment. Throws OutOfSequence if the position is not
+        ** within this sequence boundaries.
         */
         size_t sequenceToAlignment(size_t index) const;
 

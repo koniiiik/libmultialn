@@ -50,4 +50,16 @@ namespace
         EXPECT_EQ(50, forward->alignmentToSequence(4, INTERVAL_END));
     }
 
+    TEST_F(SequenceDetailsTest, ExceptionHandling)
+    {
+        EXPECT_THROW(forward->sequenceToAlignment(42), OutOfSequence);
+        EXPECT_THROW(forward->sequenceToAlignment(74), OutOfSequence);
+        EXPECT_NO_THROW(forward->sequenceToAlignment(56));
+
+        EXPECT_THROW(forward->alignmentToSequence(-1), OutOfSequence);
+        EXPECT_THROW(forward->alignmentToSequence(35), OutOfSequence);
+        EXPECT_NO_THROW(forward->alignmentToSequence(3, INTERVAL_BEGIN));
+        EXPECT_NO_THROW(forward->alignmentToSequence(30, INTERVAL_END));
+    }
+
 }  // namespace

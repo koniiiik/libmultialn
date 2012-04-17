@@ -98,23 +98,43 @@ namespace
         // The result of mapPositionToAll should be a map containing only
         // informant1.
         const AlignmentBlock::Mapping * m = block->mapPositionToAll(48);
-        ASSERT_EQ(1, m->size());
-        ASSERT_EQ(1, m->count("informant1"));
-        ASSERT_EQ(0, m->count("informant2"));
+        EXPECT_EQ(1, m->size());
+        EXPECT_EQ(1, m->count("informant1"));
+        EXPECT_EQ(0, m->count("informant2"));
         ASSERT_TRUE(m->end() != m->find("informant1"));
-        ASSERT_TRUE(m->end() == m->find("informant2"));
-        ASSERT_EQ(48, m->find("informant1")->second);
+        EXPECT_TRUE(m->end() == m->find("informant2"));
+        EXPECT_EQ(48, m->find("informant1")->second);
 
         block->addSequence("informant2", seq3);
 
         m = block->mapPositionToAll(55);
-        ASSERT_EQ(2, m->size());
-        ASSERT_EQ(1, m->count("informant1"));
-        ASSERT_EQ(1, m->count("informant2"));
+        EXPECT_EQ(2, m->size());
+        EXPECT_EQ(1, m->count("informant1"));
+        EXPECT_EQ(1, m->count("informant2"));
         ASSERT_TRUE(m->end() != m->find("informant1"));
         ASSERT_TRUE(m->end() != m->find("informant2"));
-        ASSERT_EQ(59, m->find("informant1")->second);
-        ASSERT_EQ(63, m->find("informant2")->second);
+        EXPECT_EQ(59, m->find("informant1")->second);
+        EXPECT_EQ(63, m->find("informant2")->second);
+    }
+
+    TEST(AlignmentBlockStaticTest, TestComparison)
+    {
+        std::string reference_name = "reference";
+        AlignmentBlock *a = new AlignmentBlock(&reference_name);
+        AlignmentBlock *b = new AlignmentBlock(&reference_name);
+        SequenceDetails *seq1 = GenerateSequence<uint32_t>(47, 147, false,
+                0xFFC000FF);
+        SequenceDetails *seq2 = GenerateSequence<uint32_t>(74, 470, false,
+                0x00FF003F);
+
+        a->addSequence(reference_name, seq1);
+        b->addSequence(reference_name, seq2);
+
+        EXPECT_TRUE(AlignmentBlock::compareReferencePosition(a, b));
+        EXPECT_FALSE(AlignmentBlock::compareReferencePosition(b, a));
+
+        delete a;
+        delete b;
     }
 
 }  // namespace

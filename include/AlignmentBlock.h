@@ -52,11 +52,11 @@ class AlignmentBlock
             this->sequences_[name] = details;
         }
 
-        static bool compareReferencePosition(AlignmentBlock &a,
-                AlignmentBlock &b)
+        static bool compareReferencePosition(const AlignmentBlock *a,
+                const AlignmentBlock *b)
         {
-            return (a.getReferenceSequence()->get_start()
-                    < b.getReferenceSequence()->get_start());
+            return (a->getReferenceSequence()->get_start()
+                    < b->getReferenceSequence()->get_start());
         }
 
 

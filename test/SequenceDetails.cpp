@@ -2,15 +2,16 @@
 #include <SequenceDetails.h>
 #include <BitSequence.h>
 #include <MultialnConstants.h>
+#include <BitSequenceFactory.h>
 
 #include "SequenceGenerator.h"
+#include "BitSequenceFactoryDeclarations.h"
 
 
 namespace
 {
 
-    // The fixture for testing class Foo.
-    class SequenceDetailsTest : public ::testing::Test
+    class SequenceDetailsTest : public BitSequenceParamTest
     {
         protected:
 
@@ -18,11 +19,8 @@ namespace
 
             virtual void SetUp()
             {
-                // equals 00001111000000001111111111110000; libcds stores
-                // the sequence little-endian, which means the bit string
-                // stored is 00001111111111110000000011110000
-                forward = GenerateSequence<uint32_t>(47, 84, false,
-                        0x0F00FFF0);
+                forward = GenerateSequenceDetails(GetParam(), 47, 84,
+                        false, "00001111111111110000000011110000");
             }
 
             virtual void TearDown()
@@ -32,7 +30,7 @@ namespace
     };
 
     // Tests lookups on non-reversed strands
-    TEST_F(SequenceDetailsTest, ForwardLookup)
+    TEST_P(SequenceDetailsTest, ForwardLookup)
     {
         // The sequence is zero-based, sequence offset is taken into
         // account.
@@ -50,7 +48,7 @@ namespace
         EXPECT_EQ(58, forward->alignmentToSequence(19, INTERVAL_END));
     }
 
-    TEST_F(SequenceDetailsTest, ExceptionHandling)
+    TEST_P(SequenceDetailsTest, ExceptionHandling)
     {
         EXPECT_THROW(forward->sequenceToAlignment(42), OutOfSequence);
         EXPECT_THROW(forward->sequenceToAlignment(74), OutOfSequence);
@@ -66,5 +64,9 @@ namespace
         EXPECT_THROW(forward->alignmentToSequence(30, INTERVAL_BEGIN),
                 OutOfSequence);
     }
+
+    INSTANTIATE_BITSEQ_TEST_P(
+            AllBitSequenceImplementations,
+            SequenceDetailsTest)
 
 }  // namespace

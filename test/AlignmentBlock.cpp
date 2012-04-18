@@ -5,13 +5,13 @@
 #include <MultialnConstants.h>
 
 #include "SequenceGenerator.h"
+#include "BitSequenceFactoryDeclarations.h"
 
 
 namespace
 {
 
-    // The fixture for testing class AlignmentBlock.
-    class AlignmentBlockTest: public ::testing::Test
+    class AlignmentBlockTest: public BitSequenceParamTest
     {
         protected:
 
@@ -28,9 +28,12 @@ namespace
                 // reference:   11111111000000000000001111111111
                 // informant1:  11111100000000001111111100000000
                 // informant2:  11111111111111110000001111111111
-                seq1 = GenerateSequence<uint32_t>(47, 147, false, 0xFFC000FF);
-                seq2 = GenerateSequence<uint32_t>(47, 470, false, 0x00FF003F);
-                seq3 = GenerateSequence<uint32_t>(47, 747, false, 0xFFC0FFFF);
+                seq1 = GenerateSequenceDetails(GetParam(), 47, 147, false,
+                        "11111111000000000000001111111111");
+                seq2 = GenerateSequenceDetails(GetParam(), 47, 470, false,
+                        "11111100000000001111111100000000");
+                seq3 = GenerateSequenceDetails(GetParam(), 47, 747, false,
+                        "11111111111111110000001111111111");
             }
 
             virtual void TearDown()
@@ -39,7 +42,7 @@ namespace
             }
     };
 
-    TEST_F(AlignmentBlockTest, TestCreation)
+    TEST_P(AlignmentBlockTest, TestCreation)
     {
         EXPECT_THROW(block->getReferenceSequence(), SequenceDoesNotExist);
         block->addSequence("informant1", seq2);
@@ -56,7 +59,7 @@ namespace
         EXPECT_NO_THROW(block->mapPositionToInformant(47, "informant2"));
     }
 
-    TEST_F(AlignmentBlockTest, TestSingleMaps)
+    TEST_P(AlignmentBlockTest, TestSingleMaps)
     {
         block->addSequence("reference", seq1);
         block->addSequence("informant1", seq2);
@@ -90,7 +93,7 @@ namespace
         EXPECT_EQ(72, block->mapPositionToInformant(64, "informant2"));
     }
 
-    TEST_F(AlignmentBlockTest, TestMultiMap)
+    TEST_P(AlignmentBlockTest, TestMultiMap)
     {
         block->addSequence("reference", seq1);
         block->addSequence("informant1", seq2);
@@ -122,10 +125,10 @@ namespace
         std::string reference_name = "reference";
         AlignmentBlock *a = new AlignmentBlock(&reference_name);
         AlignmentBlock *b = new AlignmentBlock(&reference_name);
-        SequenceDetails *seq1 = GenerateSequence<uint32_t>(47, 147, false,
-                0xFFC000FF);
-        SequenceDetails *seq2 = GenerateSequence<uint32_t>(74, 470, false,
-                0x00FF003F);
+        SequenceDetails *seq1 = GenerateSequenceDetails(&fact_rg2, 47, 147, false,
+                "001011");
+        SequenceDetails *seq2 = GenerateSequenceDetails(&fact_rg2, 74, 470, false,
+                "110100");
 
         a->addSequence(reference_name, seq1);
         b->addSequence(reference_name, seq2);
@@ -136,5 +139,9 @@ namespace
         delete a;
         delete b;
     }
+
+    INSTANTIATE_BITSEQ_TEST_P(
+            AllBitSequenceImplementations,
+            AlignmentBlockTest)
 
 }  // namespace

@@ -4,6 +4,9 @@
 #include <BitString.h>
 #include <BitSequenceFactory.h>
 
+#include "SequenceGenerator.h"
+#include "BitSequenceFactoryDeclarations.h"
+
 
 using ::testing::TestWithParam;
 using ::testing::Values;
@@ -13,20 +16,14 @@ using cds_utils::BitString;
 namespace
 {
 
-    class BitSequenceTest: public TestWithParam<BitSequenceFactory *>
+    class BitSequenceTest: public BitSequenceParamTest
     {
         protected:
             BitSequence * seq;
 
             virtual void SetUp()
             {
-                std::string buf = "000111000111000";
-                BitString bstr(buf.size());
-                for (size_t i = 0; i < buf.size(); ++i)
-                {
-                    bstr.setBit(i, buf[i] == '1');
-                }
-                seq = GetParam()->getInstance(bstr);
+                seq = GenerateBitSequence(GetParam(), "000111000111000");
             }
 
             virtual void TearDown()
@@ -108,14 +105,8 @@ namespace
     }
     */
 
-    BitSequenceRGFactory fact_rg2(2), fact_rg3(3), fact_rg4(4),
-                         fact_rg20(20);
-    BitSequenceRRRFactory fact_rrr;
-    BitSequenceSDArrayFactory fact_sdarray;
-    INSTANTIATE_TEST_CASE_P(
+    INSTANTIATE_BITSEQ_TEST_P(
             AllBitSequenceImplementations,
-            BitSequenceTest,
-            Values(&fact_rg2, &fact_rg3, &fact_rg4, &fact_rg20, &fact_rrr,
-                &fact_sdarray));
+            BitSequenceTest);
 
 }  // namespace

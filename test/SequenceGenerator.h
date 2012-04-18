@@ -1,11 +1,15 @@
+#ifndef SEQUENCEGENERATOR_H
+#define SEQUENCEGENERATOR_H
+
+#include <string>
 #include <BitSequence.h>
 #include <SequenceDetails.h>
+#include <BitSequenceFactory.h>
 
-template<typename content_t>
-SequenceDetails * GenerateSequence(size_t start, size_t total,
-        bool reverse, content_t content)
-{
-    cds_static::BitSequence *seq = new cds_static::BitSequenceRG(
-            &content, 8 * sizeof(content), 2);
-    return new SequenceDetails(start, seq->countOnes(), reverse, total, seq);
-}
+cds_static::BitSequence * GenerateBitSequence(const BitSequenceFactory *,
+        const std::string &);
+
+SequenceDetails * GenerateSequenceDetails(const BitSequenceFactory *, size_t,
+        size_t, bool, const std::string &);
+
+#endif /* SEQUENCEGENERATOR_H */

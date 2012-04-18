@@ -13,28 +13,28 @@ size_t SequenceDetails::sequenceToAlignment(size_t index) const
     return this->sequence_->select1(index - this->start_ + 1);
 }
 
-// TODO: This has to throw even if we want to *seek* beyond the
-// boundaries.
 size_t SequenceDetails::alignmentToSequence(size_t index,
         IntervalBoundary boundary) const
 {
-    if (index > this->sequence_->getLength())
+    if (index >= this->sequence_->getLength())
     {
         throw OutOfSequence();
     }
-    size_t wanted = index;
+    size_t rank = this->sequence_->rank1(index);
     if (!this->sequence_->access(index))
     {
         if (boundary == INTERVAL_BEGIN)
         {
-            wanted = this->sequence_->selectNext1(index);
+            ++rank;
         }
-        else
+        // rank can be 0 iff boundary is INTERVAL_END and the sought
+        // position is before our block.
+        if (rank == 0 || rank > this->size_)
         {
-            wanted = this->sequence_->selectPrev1(index);
+            throw OutOfSequence();
         }
     }
-    return this->sequence_->rank1(wanted) + this->start_ - 1;
+    return rank + this->start_ - 1;
 }
 
 size_t SequenceDetails::rank(size_t index) const

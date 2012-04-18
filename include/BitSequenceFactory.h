@@ -5,19 +5,14 @@
 #include <BitString.h>
 
 
-using cds_static::BitSequence;
-using cds_static::BitSequenceRG;
-using cds_static::BitSequenceRRR;
-using cds_static::BitSequenceSDArray;
-using cds_utils::BitString;
-
 class BitSequenceFactory
 {
     public:
         virtual ~BitSequenceFactory()
         { }
 
-        virtual BitSequence * getInstance(const BitString &) const = 0;
+        virtual cds_static::BitSequence * getInstance(
+                const cds_utils::BitString &) const = 0;
 };
 
 class BitSequenceRGFactory: public BitSequenceFactory
@@ -30,9 +25,10 @@ class BitSequenceRGFactory: public BitSequenceFactory
         virtual ~BitSequenceRGFactory()
         { }
 
-        virtual BitSequence * getInstance(const BitString &str) const
+        virtual cds_static::BitSequence * getInstance(
+                const cds_utils::BitString &str) const
         {
-            return new BitSequenceRG(str, this->factor_);
+            return new cds_static::BitSequenceRG(str, this->factor_);
         }
 
 
@@ -49,9 +45,10 @@ class BitSequenceRRRFactory: public BitSequenceFactory
         virtual ~BitSequenceRRRFactory()
         { }
 
-        virtual BitSequence * getInstance(const BitString &str) const
+        virtual cds_static::BitSequence * getInstance(
+                const cds_utils::BitString &str) const
         {
-            return new BitSequenceRRR(str);
+            return new cds_static::BitSequenceRRR(str);
         }
 };
 
@@ -64,9 +61,10 @@ class BitSequenceSDArrayFactory: public BitSequenceFactory
         virtual ~BitSequenceSDArrayFactory()
         { }
 
-        virtual BitSequence * getInstance(const BitString &str) const
+        virtual cds_static::BitSequence * getInstance(
+                const cds_utils::BitString &str) const
         {
-            return new BitSequenceSDArray(str);
+            return new cds_static::BitSequenceSDArray(str);
         }
 };
 

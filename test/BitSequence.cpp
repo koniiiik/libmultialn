@@ -105,8 +105,6 @@ namespace
     }
     */
 
-    INSTANTIATE_BITSEQ_TEST_P(
-            AllBitSequenceImplementations,
-            BitSequenceTest);
+    INSTANTIATE_BITSEQ_TEST_P(BitSequenceTest);
 
 }  // namespace

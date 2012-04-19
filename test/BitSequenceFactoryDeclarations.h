@@ -4,9 +4,9 @@
 #include <gtest/gtest.h>
 #include <BitSequenceFactory.h>
 
-#define INSTANTIATE_BITSEQ_TEST_P(inst_name, test_name) \
+#define INSTANTIATE_BITSEQ_TEST_P(test_name) \
     INSTANTIATE_TEST_CASE_P( \
-        inst_name, \
+        AllBitSequenceImplementations, \
         test_name, \
         ::testing::Values(&fact_rg2, &fact_rg3, &fact_rg4, &fact_rg20, \
             &fact_rrr, &fact_sdarray));

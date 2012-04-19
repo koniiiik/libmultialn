@@ -65,8 +65,6 @@ namespace
                 OutOfSequence);
     }
 
-    INSTANTIATE_BITSEQ_TEST_P(
-            AllBitSequenceImplementations,
-            SequenceDetailsTest)
+    INSTANTIATE_BITSEQ_TEST_P(SequenceDetailsTest)
 
 }  // namespace

@@ -140,8 +140,6 @@ namespace
         delete b;
     }
 
-    INSTANTIATE_BITSEQ_TEST_P(
-            AllBitSequenceImplementations,
-            AlignmentBlockTest)
+    INSTANTIATE_BITSEQ_TEST_P(AlignmentBlockTest)
 
 }  // namespace

@@ -10,6 +10,7 @@ ADD_EXECUTABLE(multialn_test
     BitSequenceFactoryDefinitions.cpp
     SequenceGenerator.h
     SequenceGenerator.cpp
+    AlignmentBlockStorage.cpp
 )
 TARGET_LINK_LIBRARIES(multialn_test multialn ${GTEST_BOTH_LIBRARIES})
 

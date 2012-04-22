@@ -29,7 +29,7 @@ AlignmentBlock::~AlignmentBlock()
     this->clearSequences();
 }
 
-const size_t AlignmentBlock::mapPositionToInformant(const size_t pos,
+size_t AlignmentBlock::mapPositionToInformant(const size_t pos,
         const std::string &informant, const IntervalBoundary boundary) const
 {
     const SequenceDetails *ref = this->getReferenceSequence();

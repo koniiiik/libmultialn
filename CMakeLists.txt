@@ -9,7 +9,10 @@ SET_PROPERTY(CACHE BITSEQ_IMPLEMENTATION PROPERTY STRINGS
     "RG" "RRR" "SDArray")
 
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++0x")
+
+IF(CMAKE_COMPILER_IS_GNUCXX)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra --std=c++0x")
+ENDIF()
 
 # We need to extend CMAKE_MODULE_PATH to our PROJECT_SOURCE_DIR since we
 # hold the FindLibCDS.cmake file and the project itself doesn't ship

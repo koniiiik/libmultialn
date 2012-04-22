@@ -24,8 +24,8 @@ class SequenceDetails
         SequenceDetails(size_t start, size_t size, bool reverse,
                         size_t src_size,
                         cds_static::BitSequence *sequence):
-            start_(start), size_(size), reverse_(reverse),
-            src_size_(src_size), sequence_(sequence)
+            start_(start), size_(size), src_size_(src_size),
+            reverse_(reverse), sequence_(sequence)
         { }
 
         /*

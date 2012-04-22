@@ -33,6 +33,7 @@ class AlignmentBlock
         {
             this->clearSequences();
             this->copySequences(other.sequences_);
+            return (*this);
         }
 
         /*
@@ -42,7 +43,7 @@ class AlignmentBlock
         ** Throws OutOfSequence in case the position can't be mapped
         ** within this block.
         */
-        const size_t mapPositionToInformant(const size_t pos,
+        size_t mapPositionToInformant(const size_t pos,
                 const std::string &informant,
                 const IntervalBoundary boundary=INTERVAL_BEGIN) const;
         /*

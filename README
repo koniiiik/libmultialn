@@ -1,0 +1,14 @@
+libmultialn depends on the following packages:
+
+ * libcds (available at https://github.com/fclaude/libcds/)
+ * Google test for unit tests
+
+Cmake 2.8 is used to build this. To configure the build environment, run
+
+$ cmake -DLIBCDS_ROOT=<path to libcds root> .
+
+Afterwards, running make will build the project.
+
+To enble unit tests, run cmake with -DENABLE_TEST=ON as well. Then, after
+rebuilding with make, run test/multialn_test to see the results of the
+test suite.

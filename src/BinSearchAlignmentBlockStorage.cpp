@@ -2,6 +2,7 @@
 
 #include <BinSearchAlignmentBlockStorage.h>
 #include <AlignmentBlock.h>
+#include <SequenceDetails.h>
 
 
 BinSearchAlignmentBlockStorage::~BinSearchAlignmentBlockStorage()
@@ -21,6 +22,11 @@ void BinSearchAlignmentBlockStorage::addBlock(AlignmentBlock *block)
 const AlignmentBlock * BinSearchAlignmentBlockStorage::findBlock(
         const size_t pos)
 {
+    if (this->contents_.empty())
+    {
+        throw OutOfSequence();
+    }
+
     this->prepare();
     size_t start = 0, end = this->contents_.size();
     while ((end - start) > 1)
@@ -35,7 +41,12 @@ const AlignmentBlock * BinSearchAlignmentBlockStorage::findBlock(
             end = middle;
         }
     }
-    return this->contents_[start];
+
+    AlignmentBlock * block = this->contents_[start];
+    // We need to do this to verify the position is contained within this
+    // block and thwow OutOfSequence otherwise.
+    block->getReferenceSequence()->sequenceToAlignment(pos);
+    return block;
 }
 
 void BinSearchAlignmentBlockStorage::prepare()

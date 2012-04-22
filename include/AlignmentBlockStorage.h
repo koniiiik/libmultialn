@@ -15,6 +15,9 @@ class AlignmentBlockStorage
         /*
         ** Returns the last block whose starting position on the reference
         ** sequence compares less than or equal to the given position.
+        **
+        ** Throws OutOfSequence in case the position is not contained in
+        ** any block.
         */
         virtual const AlignmentBlock * findBlock(const size_t) = 0;
 };

@@ -63,4 +63,17 @@ namespace
         EXPECT_EQ(30, storage->findBlock(32)->getReferenceSequence()->get_start());
     }
 
+    TEST_F(AlignmentBlockStorageTest, ThrowsOnNonexisting)
+    {
+        EXPECT_THROW(storage->findBlock(47), OutOfSequence);
+        EXPECT_THROW(storage->findBlock(11), OutOfSequence);
+        EXPECT_THROW(storage->findBlock(25), OutOfSequence);
+        EXPECT_THROW(storage->findBlock(29), OutOfSequence);
+        EXPECT_NO_THROW(storage->findBlock(12));
+        EXPECT_NO_THROW(storage->findBlock(14));
+        EXPECT_NO_THROW(storage->findBlock(15));
+        EXPECT_NO_THROW(storage->findBlock(24));
+        EXPECT_NO_THROW(storage->findBlock(32));
+    }
+
 } /* namespace */

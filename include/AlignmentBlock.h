@@ -42,6 +42,9 @@ class AlignmentBlock
         **
         ** Throws OutOfSequence in case the position can't be mapped
         ** within this block.
+        **
+        ** Throws SequenceDoesNotExist in case the informant is not
+        ** present in this block.
         */
         size_t mapPositionToInformant(const size_t pos,
                 const std::string &informant,

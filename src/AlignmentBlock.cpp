@@ -47,8 +47,16 @@ const AlignmentBlock::Mapping * AlignmentBlock::mapPositionToAll(const size_t po
     {
         if (it->first == (*this->reference_name_))
             continue;
-        (*mapping)[it->first] = this->mapPositionToInformant(pos, it->first,
-                boundary);
+        try
+        {
+            size_t pos_inf = this->mapPositionToInformant(pos, it->first,
+                    boundary);
+            (*mapping)[it->first] = pos_inf;
+        }
+        // If the mapping fails with an exception, we want to silently
+        // ignore it.
+        catch (OutOfSequence &e)
+        { }
     }
     return mapping;
 }

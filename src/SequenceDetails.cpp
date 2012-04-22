@@ -6,7 +6,7 @@
 
 size_t SequenceDetails::sequenceToAlignment(size_t index) const
 {
-    if (index < this->start_ || index > (this->start_ + this->size_))
+    if (index < this->start_ || index >= (this->start_ + this->size_))
     {
         throw OutOfSequence();
     }

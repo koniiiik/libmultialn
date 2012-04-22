@@ -52,6 +52,8 @@ namespace
     {
         EXPECT_THROW(forward->sequenceToAlignment(42), OutOfSequence);
         EXPECT_THROW(forward->sequenceToAlignment(74), OutOfSequence);
+        EXPECT_THROW(forward->sequenceToAlignment(64), OutOfSequence);
+        EXPECT_THROW(forward->sequenceToAlignment(63), OutOfSequence);
         EXPECT_NO_THROW(forward->sequenceToAlignment(56));
 
         EXPECT_THROW(forward->alignmentToSequence(-1), OutOfSequence);

@@ -6,6 +6,7 @@
 #include <SequenceDetails.h>
 #include <BitSequenceFactory.h>
 
+
 cds_static::BitSequence * GenerateBitSequence(const BitSequenceFactory *,
         const std::string &);
 

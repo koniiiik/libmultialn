@@ -23,7 +23,8 @@ class BinSearchAlignmentBlockStorage: public AlignmentBlockStorage
         class Iterator: public AlignmentBlockStorage::Iterator
         {
             public:
-                Iterator(const Container::iterator &it): current_(it)
+                Iterator(const Container::iterator &it):
+                    current_(it)
                 { }
                 virtual reference operator*() const;
                 virtual pointer operator->() const;

@@ -17,24 +17,21 @@ namespace
         protected:
 
             WholeGenomeAlignment *al;
-            string reference;
 
             virtual void SetUp()
             {
-                reference = "reference";
-
                 AlignmentBlockStorage *storage = new
                     BinSearchAlignmentBlockStorage;
 
-                al = new WholeGenomeAlignment(storage);
+                al = new WholeGenomeAlignment("reference", storage);
 
                 AlignmentBlock *block;
                 SequenceDetails *seq;
 
-                block = new AlignmentBlock(&reference);
+                block = new AlignmentBlock(&al->get_reference());
                 seq = GenerateSequenceDetails(GetParam(), 20, 240, false,
                         "111110000011111");
-                block->addSequence(reference, seq);
+                block->addSequence("reference", seq);
                 seq = GenerateSequenceDetails(GetParam(), 10, 150, false,
                         "111111100000111");
                 block->addSequence("forwardinf", seq);
@@ -43,10 +40,10 @@ namespace
                 block->addSequence("reverseinf", seq);
                 al->addBlock(block);
 
-                block = new AlignmentBlock(&reference);
+                block = new AlignmentBlock(&al->get_reference());
                 seq = GenerateSequenceDetails(GetParam(), 30, 240, false,
                         "111110000011111");
-                block->addSequence(reference, seq);
+                block->addSequence("reference", seq);
                 seq = GenerateSequenceDetails(GetParam(), 30, 150, false,
                         "111111100000111");
                 block->addSequence("forwardinf", seq);

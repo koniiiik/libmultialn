@@ -12,17 +12,10 @@
 class WholeGenomeAlignment
 {
     public:
-        WholeGenomeAlignment(AlignmentBlockStorage * storage):
-            storage_(storage)
+        WholeGenomeAlignment(const std::string &reference,
+                AlignmentBlockStorage * storage):
+            reference_(reference), storage_(storage)
         { }
-
-        void set_reference_if_empty(const std::string &name)
-        {
-            if (reference_.empty())
-            {
-                reference_ = name;
-            }
-        }
 
         const string & get_reference() const
         {

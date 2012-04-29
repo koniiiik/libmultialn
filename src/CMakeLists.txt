@@ -4,6 +4,7 @@ ADD_LIBRARY(multialn
     ${PROJECT_SOURCE_DIR}/include/SequenceDetails.h
     AlignmentBlock.cpp
     ${PROJECT_SOURCE_DIR}/include/AlignmentBlock.h
+    AlignmentBlockStorage.cpp
     ${PROJECT_SOURCE_DIR}/include/AlignmentBlockStorage.h
     BinSearchAlignmentBlockStorage.cpp
     ${PROJECT_SOURCE_DIR}/include/BinSearchAlignmentBlockStorage.h

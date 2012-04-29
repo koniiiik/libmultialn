@@ -57,23 +57,43 @@ namespace
 
     TEST_F(AlignmentBlockStorageTest, FindsExistingBlocks)
     {
-        EXPECT_EQ(12, storage->findBlock(12)->getReferenceSequence()->get_start());
-        EXPECT_EQ(12, storage->findBlock(14)->getReferenceSequence()->get_start());
-        EXPECT_EQ(15, storage->findBlock(20)->getReferenceSequence()->get_start());
-        EXPECT_EQ(30, storage->findBlock(32)->getReferenceSequence()->get_start());
+        EXPECT_EQ(12, storage->getBlock(12)->getReferenceSequence()->get_start());
+        EXPECT_EQ(12, storage->getBlock(14)->getReferenceSequence()->get_start());
+        EXPECT_EQ(15, storage->getBlock(20)->getReferenceSequence()->get_start());
+        EXPECT_EQ(30, storage->getBlock(32)->getReferenceSequence()->get_start());
     }
 
     TEST_F(AlignmentBlockStorageTest, ThrowsOnNonexisting)
     {
-        EXPECT_THROW(storage->findBlock(47), OutOfSequence);
-        EXPECT_THROW(storage->findBlock(11), OutOfSequence);
-        EXPECT_THROW(storage->findBlock(25), OutOfSequence);
-        EXPECT_THROW(storage->findBlock(29), OutOfSequence);
-        EXPECT_NO_THROW(storage->findBlock(12));
-        EXPECT_NO_THROW(storage->findBlock(14));
-        EXPECT_NO_THROW(storage->findBlock(15));
-        EXPECT_NO_THROW(storage->findBlock(24));
-        EXPECT_NO_THROW(storage->findBlock(32));
+        EXPECT_THROW(storage->getBlock(47), OutOfSequence);
+        EXPECT_THROW(storage->getBlock(11), OutOfSequence);
+        EXPECT_THROW(storage->getBlock(25), OutOfSequence);
+        EXPECT_THROW(storage->getBlock(29), OutOfSequence);
+        EXPECT_NO_THROW(storage->getBlock(12));
+        EXPECT_NO_THROW(storage->getBlock(14));
+        EXPECT_NO_THROW(storage->getBlock(15));
+        EXPECT_NO_THROW(storage->getBlock(24));
+        EXPECT_NO_THROW(storage->getBlock(32));
+    }
+
+    TEST_F(AlignmentBlockStorageTest, Iterators)
+    {
+        EXPECT_THROW(storage->find(5), OutOfSequence);
+        AlignmentBlockStorage::Iterator *it1, *it2;
+        EXPECT_NO_THROW(it1 = storage->find(14));
+        EXPECT_NO_THROW(it2 = storage->find(15));
+        EXPECT_EQ(12, (*it1)->getReferenceSequence()->get_start());
+        EXPECT_EQ(12, (**it1).getReferenceSequence()->get_start());
+        EXPECT_FALSE(*it1 == *it2);
+        EXPECT_TRUE(*it1 != *it2);
+        (*it1)++;
+        EXPECT_EQ(15, (*it1)->getReferenceSequence()->get_start());
+        EXPECT_TRUE(*it1 == *it2);
+        EXPECT_FALSE(*it1 != *it2);
+        (*it1)++;
+        EXPECT_EQ(30, (*it1)->getReferenceSequence()->get_start());
+        delete it2;
+        delete it1;
     }
 
 } /* namespace */

@@ -16,16 +16,31 @@
 */
 class BinSearchAlignmentBlockStorage: public AlignmentBlockStorage
 {
+    private:
+        typedef std::vector<AlignmentBlock *> Container;
+
     public:
+        class Iterator: public AlignmentBlockStorage::Iterator
+        {
+            public:
+                Iterator(const Container::iterator &it): current_(it)
+                { }
+                virtual reference operator*() const;
+                virtual pointer operator->() const;
+                virtual Iterator& operator++();
+                virtual void operator++(int);
+
+            private:
+                Container::iterator current_;
+        };
         BinSearchAlignmentBlockStorage():
             prepared_(false)
         { }
         virtual ~BinSearchAlignmentBlockStorage();
         virtual void addBlock(AlignmentBlock *block);
-        virtual const AlignmentBlock * findBlock(const size_t pos);
+        virtual Iterator * find(const size_t pos);
 
     private:
-        typedef std::vector<AlignmentBlock *> Container;
         Container contents_;
         bool prepared_;
         void prepare();

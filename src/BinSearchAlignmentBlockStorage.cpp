@@ -19,8 +19,8 @@ void BinSearchAlignmentBlockStorage::addBlock(AlignmentBlock *block)
     this->contents_.push_back(block);
 }
 
-const AlignmentBlock * BinSearchAlignmentBlockStorage::findBlock(
-        const size_t pos)
+BinSearchAlignmentBlockStorage::Iterator *
+BinSearchAlignmentBlockStorage::find(const size_t pos)
 {
     if (this->contents_.empty())
     {
@@ -42,11 +42,12 @@ const AlignmentBlock * BinSearchAlignmentBlockStorage::findBlock(
         }
     }
 
-    AlignmentBlock * block = this->contents_[start];
-    // We need to do this to verify the position is contained within this
-    // block and thwow OutOfSequence otherwise.
-    block->getReferenceSequence()->sequenceToAlignment(pos);
-    return block;
+    if (this->contents_[start]->getReferenceSequence()->get_start() > pos)
+    {
+        throw OutOfSequence();
+    }
+
+    return new Iterator(this->contents_.begin() + start);
 }
 
 void BinSearchAlignmentBlockStorage::prepare()
@@ -58,4 +59,28 @@ void BinSearchAlignmentBlockStorage::prepare()
     std::sort(this->contents_.begin(), this->contents_.end(),
             AlignmentBlock::compareReferencePosition);
     this->prepared_ = true;
+}
+
+BinSearchAlignmentBlockStorage::Iterator::reference
+BinSearchAlignmentBlockStorage::Iterator::operator*() const
+{
+    return **(this->current_);
+}
+
+BinSearchAlignmentBlockStorage::Iterator::pointer
+BinSearchAlignmentBlockStorage::Iterator::operator->() const
+{
+    return *(this->current_);
+}
+
+BinSearchAlignmentBlockStorage::Iterator&
+BinSearchAlignmentBlockStorage::Iterator::operator++()
+{
+    ++(this->current_);
+    return *this;
+}
+
+void BinSearchAlignmentBlockStorage::Iterator::operator++(int)
+{
+    this->current_++;
 }

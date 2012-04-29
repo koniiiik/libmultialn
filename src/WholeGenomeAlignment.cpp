@@ -9,6 +9,6 @@ using std::string;
 size_t WholeGenomeAlignment::mapPositionToInformant(size_t position,
         const string &informant, IntervalBoundary boundary) const
 {
-    const AlignmentBlock * block = this->storage_->findBlock(position);
+    const AlignmentBlock * block = this->storage_->getBlock(position);
     return block->mapPositionToInformant(position, informant, boundary);
 }

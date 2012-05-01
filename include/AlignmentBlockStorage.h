@@ -25,7 +25,7 @@ class AlignmentBlockStorage
         {
             public:
                 // iterator_traits requirements
-                typedef typename std::forward_iterator_tag iterator_category;
+                typedef std::forward_iterator_tag iterator_category;
                 typedef AlignmentBlock value_type;
                 typedef AlignmentBlock * pointer;
                 typedef AlignmentBlock & reference;

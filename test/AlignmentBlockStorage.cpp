@@ -55,6 +55,11 @@ namespace
             }
     };
 
+    TEST_F(AlignmentBlockStorageTest, CorrectSize)
+    {
+        EXPECT_EQ(3, storage->size());
+    }
+
     TEST_F(AlignmentBlockStorageTest, FindsExistingBlocks)
     {
         EXPECT_EQ(12, storage->getBlock(12)->getReferenceSequence()->get_start());
@@ -80,7 +85,7 @@ namespace
     {
         EXPECT_THROW(storage->find(5), OutOfSequence);
         AlignmentBlockStorage::Iterator *it1, *it2;
-        EXPECT_NO_THROW(it1 = storage->find(14));
+        EXPECT_NO_THROW(it1 = storage->first());
         EXPECT_NO_THROW(it2 = storage->find(15));
         EXPECT_EQ(12, (*it1)->getReferenceSequence()->get_start());
         EXPECT_EQ(12, (**it1).getReferenceSequence()->get_start());

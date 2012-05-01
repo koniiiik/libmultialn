@@ -52,6 +52,14 @@ class SequenceDetails
         {
             return this->start_;
         }
+        size_t get_size() const
+        {
+            return this->size_;
+        }
+        size_t get_src_size()
+        {
+            return this->src_size_;
+        }
 
 
     private:

@@ -20,6 +20,7 @@ class AlignmentBlockStorage
         ** to return by value as this is C++ and we obviously can't do
         ** this with an abstract class.
         */
+        // TODO: define behavior beyond the storage (exception?)
         class Iterator
         {
             public:
@@ -68,6 +69,17 @@ class AlignmentBlockStorage
         ** any block.
         */
         virtual const AlignmentBlock * getBlock(const size_t pos);
+
+        /*
+        ** Analogic to the STL first method on containers, returns an
+        ** iterator pointing to the first block.
+        */
+        virtual Iterator * first() = 0;
+
+        /*
+        ** Returns the number of blocks contained within this storage.
+        */
+        virtual size_t size() const = 0;
 };
 
 #endif /* ALIGNMENTBLOCKSTORAGE_H */

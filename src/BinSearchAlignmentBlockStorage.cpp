@@ -50,6 +50,18 @@ BinSearchAlignmentBlockStorage::find(const size_t pos)
     return new Iterator(this->contents_.begin() + start);
 }
 
+BinSearchAlignmentBlockStorage::Iterator *
+BinSearchAlignmentBlockStorage::first()
+{
+    this->prepare();
+    return new Iterator(this->contents_.begin());
+}
+
+size_t BinSearchAlignmentBlockStorage::size() const
+{
+    return this->contents_.size();
+}
+
 void BinSearchAlignmentBlockStorage::prepare()
 {
     if (this->prepared_)

@@ -8,6 +8,7 @@
 #include "SequenceGenerator.h"
 #include "BitSequenceFactoryDeclarations.h"
 
+
 using std::string;
 
 namespace

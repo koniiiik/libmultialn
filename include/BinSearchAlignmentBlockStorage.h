@@ -40,6 +40,8 @@ class BinSearchAlignmentBlockStorage: public AlignmentBlockStorage
         virtual ~BinSearchAlignmentBlockStorage();
         virtual void addBlock(AlignmentBlock *block);
         virtual Iterator * find(const size_t pos);
+        virtual Iterator * first();
+        virtual size_t size() const;
 
     private:
         Container contents_;

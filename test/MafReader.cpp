@@ -85,30 +85,30 @@ namespace
                     NULL), ParseError);
     }
 
-    string test_file = R"(track name=euArc visibility=pack
-##maf version=1 scoring=tba.v8
-# tba.v8 (((human chimp) baboon) (mouse rat))
-
-a score=23262.0
-s hg18.chr7    27578828 38 + 158545518 AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG
-s panTro1.chr6 28741140 38 + 161576975 AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG
-s baboon         116834 38 +   4622798 AAA-GGGAATGTTAACCAAATGA---GTTGTCTCTTATGGTG
-s mm4.chr6     53215344 38 + 151104725 -AATGGGAATGTTAAGCAAACGA---ATTGTCTCTCAGTGTG
-s rn3.chr4     81344243 40 + 187371129 -AA-GGGGATGCTAAGCCAATGAGTTGTTGTCTCTCAATGTG
-
-a score=5062.0
-s hg18.chr7    27699739 6 + 158545518 TAAAGA
-s panTro1.chr6 28862317 6 + 161576975 TAAAGA
-s baboon         241163 6 +   4622798 TAAAGA
-s mm4.chr6     53303881 6 + 151104725 TAAAGA
-s rn3.chr4     81444246 6 + 187371129 taagga
-
-a score=6636.0
-s hg18.chr7    27707221 13 + 158545518 gcagctgaaaaca
-s panTro1.chr6 28869787 13 + 161576975 gcagctgaaaaca
-s baboon         249182 13 +   4622798 gcagctgaaaaca
-s mm4.chr6     53310102 13 + 151104725 ACAGCTGAAAATA
-)";
+    string test_file = "track name=euArc visibility=pack\n\
+##maf version=1 scoring=tba.v8\n\
+# tba.v8 (((human chimp) baboon) (mouse rat))\n\
+\n\
+a score=23262.0\n\
+s hg18.chr7    27578828 38 + 158545518 AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG\n\
+s panTro1.chr6 28741140 38 + 161576975 AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG\n\
+s baboon         116834 38 +   4622798 AAA-GGGAATGTTAACCAAATGA---GTTGTCTCTTATGGTG\n\
+s mm4.chr6     53215344 38 + 151104725 -AATGGGAATGTTAAGCAAACGA---ATTGTCTCTCAGTGTG\n\
+s rn3.chr4     81344243 40 + 187371129 -AA-GGGGATGCTAAGCCAATGAGTTGTTGTCTCTCAATGTG\n\
+\n\
+a score=5062.0\n\
+s hg18.chr7    27699739 6 + 158545518 TAAAGA\n\
+s panTro1.chr6 28862317 6 + 161576975 TAAAGA\n\
+s baboon         241163 6 +   4622798 TAAAGA\n\
+s mm4.chr6     53303881 6 + 151104725 TAAAGA\n\
+s rn3.chr4     81444246 6 + 187371129 taagga\n\
+\n\
+a score=6636.0\n\
+s hg18.chr7    27707221 13 + 158545518 gcagctgaaaaca\n\
+s panTro1.chr6 28869787 13 + 161576975 gcagctgaaaaca\n\
+s baboon         249182 13 +   4622798 gcagctgaaaaca\n\
+s mm4.chr6     53310102 13 + 151104725 ACAGCTGAAAATA\n\
+";
 
     TEST(MafReaderTest, SuccessOnValid)
     {
@@ -153,13 +153,13 @@ s mm4.chr6     53310102 13 + 151104725 ACAGCTGAAAATA
 
     TEST(MafReaderTest, FailsOnInvalid)
     {
-        string invalid_input = R"(##maf version=1 scoring=tba.v8
-# tba.v8 (((human chimp) baboon) (mouse rat))
-
-a score=23262.0
-s hg18.chr7    27578828 38 + 158545518 AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG
-s panTro1.chr6 28741140Invalid! 38 + 161576975 AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG
-)";
+        string invalid_input = "##maf version=1 scoring=tba.v8\n\
+# tba.v8 (((human chimp) baboon) (mouse rat))\n\
+\n\
+a score=23262.0\n\
+s hg18.chr7    27578828 38 + 158545518 AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG\n\
+s panTro1.chr6 28741140Invalid! 38 + 161576975 AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG\n\
+";
 
         istringstream s(invalid_input);
         AlignmentBlockStorage *storage = new BinSearchAlignmentBlockStorage();

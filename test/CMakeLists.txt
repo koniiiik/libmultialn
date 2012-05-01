@@ -11,6 +11,7 @@ ADD_EXECUTABLE(multialn_test
     SequenceGenerator.cpp
     AlignmentBlockStorage.cpp
     WholeGenomeAlignment.cpp
+    MafReader.cpp
 )
 TARGET_LINK_LIBRARIES(multialn_test multialn ${GTEST_BOTH_LIBRARIES})
 

@@ -62,6 +62,7 @@ namespace
             SCOPED_TRACE("");
             VerifyParsedTestLine(pline);
         }
+        delete pline->second;
         delete pline;
 
         set<string> limit;
@@ -75,6 +76,7 @@ namespace
             SCOPED_TRACE("");
             VerifyParsedTestLine(pline);
         }
+        delete pline->second;
         delete pline;
 
         EXPECT_THROW(parseMafLine("random useless stuff", factory, NULL),
@@ -149,6 +151,8 @@ s mm4.chr6     53310102 13 + 151104725 ACAGCTGAAAATA\n\
                     "panTro1.chr6"));
         EXPECT_THROW(wga.mapPositionToInformant(27707225, "rn3.chr4"),
                 SequenceDoesNotExist);
+
+        delete it;
     }
 
     TEST(MafReaderTest, FailsOnInvalid)

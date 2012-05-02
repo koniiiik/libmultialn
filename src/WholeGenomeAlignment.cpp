@@ -6,6 +6,11 @@
 using std::string;
 
 
+WholeGenomeAlignment::~WholeGenomeAlignment()
+{
+    delete this->storage_;
+}
+
 size_t WholeGenomeAlignment::mapPositionToInformant(size_t position,
         const string &informant, IntervalBoundary boundary) const
 {

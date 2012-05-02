@@ -146,6 +146,11 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
                 wga.addBlock(block);
                 return;
             }
+            catch (ParseError &e)
+            {
+                delete block;
+                throw;
+            }
             wga.addBlock(block);
         }
     }

@@ -16,6 +16,7 @@ class WholeGenomeAlignment
                 AlignmentBlockStorage * storage):
             reference_(reference), storage_(storage)
         { }
+        ~WholeGenomeAlignment();
 
         const string & get_reference() const
         {

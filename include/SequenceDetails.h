@@ -56,7 +56,7 @@ class SequenceDetails
         {
             return this->size_;
         }
-        size_t get_src_size()
+        size_t get_src_size() const
         {
             return this->src_size_;
         }

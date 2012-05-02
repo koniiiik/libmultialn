@@ -2,6 +2,7 @@
 
 #include <WholeGenomeAlignment.h>
 #include <AlignmentBlock.h>
+#include <AlignmentBlockStorage.h>
 
 using std::string;
 
@@ -16,4 +17,12 @@ size_t WholeGenomeAlignment::mapPositionToInformant(size_t position,
 {
     const AlignmentBlock * block = this->storage_->getBlock(position);
     return block->mapPositionToInformant(position, informant, boundary);
+}
+
+size_t WholeGenomeAlignment::getReferenceSize() const
+{
+    AlignmentBlockStorage::Iterator * it = this->storage_->first();
+    size_t res = (*it)->getReferenceSequence()->get_src_size();
+    delete it;
+    return res;
 }

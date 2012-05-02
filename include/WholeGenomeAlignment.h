@@ -42,6 +42,11 @@ class WholeGenomeAlignment
                 const std::string &informant,
                 IntervalBoundary boundary=INTERVAL_BEGIN) const;
 
+        /*
+        ** Returns the size of the reference sequence.
+        */
+        size_t getReferenceSize() const;
+
 
     private:
         std::string reference_;

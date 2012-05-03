@@ -1,5 +1,4 @@
-FIND_PACKAGE(GTest REQUIRED)
-INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${gtest_SOURCE_DIR}/include)
 
 ADD_EXECUTABLE(multialn_test
     SequenceDetails.cpp
@@ -13,6 +12,6 @@ ADD_EXECUTABLE(multialn_test
     WholeGenomeAlignment.cpp
     MafReader.cpp
 )
-TARGET_LINK_LIBRARIES(multialn_test multialn ${GTEST_BOTH_LIBRARIES})
+TARGET_LINK_LIBRARIES(multialn_test multialn gtest gtest_main)
 
 ADD_TEST(multialn_test multialn_test)

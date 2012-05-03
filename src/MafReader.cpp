@@ -137,7 +137,8 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
                             factory, limit);
                     if (details != NULL)
                     {
-                        block->addSequence(details);
+                        block->addSequence(*details);
+                        delete details;
                     }
                     buf = getNextLine(s);
                 }

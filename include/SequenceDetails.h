@@ -65,10 +65,10 @@ class SequenceDetails
             return this->id_;
         }
 
-        static bool compareById(const SequenceDetails *d1,
-                const SequenceDetails *d2)
+        static bool compareById(const SequenceDetails &d1,
+                const SequenceDetails &d2)
         {
-            return d1->get_id() < d2->get_id();
+            return d1.get_id() < d2.get_id();
         }
 
 

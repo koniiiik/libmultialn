@@ -39,9 +39,13 @@ namespace
                 block2 = new AlignmentBlock();
                 block3 = new AlignmentBlock();
 
-                block1->addSequence(seq1);
-                block2->addSequence(seq2);
-                block3->addSequence(seq3);
+                block1->addSequence(*seq1);
+                block2->addSequence(*seq2);
+                block3->addSequence(*seq3);
+
+                delete seq1;
+                delete seq2;
+                delete seq3;
 
                 storage->addBlock(block3);
                 storage->addBlock(block1);

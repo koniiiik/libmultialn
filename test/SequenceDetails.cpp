@@ -76,8 +76,8 @@ namespace
                 84, false, 1, "1100");
         SequenceDetails *second = GenerateSequenceDetails(&fact_rg2, 47,
                 84, false, 2, "0011");
-        EXPECT_TRUE(SequenceDetails::compareById(first, second));
-        EXPECT_FALSE(SequenceDetails::compareById(second, first));
+        EXPECT_TRUE(SequenceDetails::compareById(*first, *second));
+        EXPECT_FALSE(SequenceDetails::compareById(*second, *first));
 
         delete first;
         delete second;

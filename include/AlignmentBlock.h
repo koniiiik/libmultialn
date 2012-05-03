@@ -27,10 +27,6 @@ class AlignmentBlock
         AlignmentBlock():
             prepared_(false)
         { }
-        AlignmentBlock(const AlignmentBlock &ab);
-        ~AlignmentBlock();
-
-        AlignmentBlock & operator=(const AlignmentBlock &other);
 
         /*
         ** Takes a position in the reference sequence and maps it to a
@@ -68,7 +64,7 @@ class AlignmentBlock
             return this->getSequence(kReferenceSequenceId);
         }
 
-        void addSequence(const SequenceDetails *details)
+        void addSequence(const SequenceDetails &details)
         {
             this->prepared_ = false;
             this->sequences_.push_back(details);
@@ -83,13 +79,15 @@ class AlignmentBlock
 
 
     private:
-        typedef std::vector<const SequenceDetails *> Container;
+        typedef std::vector<SequenceDetails> Container;
         Container sequences_;
         bool prepared_;
 
         void prepare();
-        void clearSequences();
-        void copySequences(const Container &sequences);
+
+        // The following are forbidden.
+        AlignmentBlock(AlignmentBlock &);
+        AlignmentBlock & operator=(AlignmentBlock &);
 };
 
 #endif /* ALIGNMENTBLOCK_H */

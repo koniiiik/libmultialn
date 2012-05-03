@@ -37,25 +37,31 @@ namespace
                 block = new AlignmentBlock();
                 seq = GenerateSequenceDetails(GetParam(), 20, 240, false,
                         reference_id, "111110000011111");
-                block->addSequence(seq);
+                block->addSequence(*seq);
+                delete seq;
                 seq = GenerateSequenceDetails(GetParam(), 10, 150, false,
                         forward_id, "111111100000111");
-                block->addSequence(seq);
+                block->addSequence(*seq);
+                delete seq;
                 seq = GenerateSequenceDetails(GetParam(), 150, 180, true,
                         reverse_id, "000111111111100");
-                block->addSequence(seq);
+                block->addSequence(*seq);
+                delete seq;
                 al->addBlock(block);
 
                 block = new AlignmentBlock();
                 seq = GenerateSequenceDetails(GetParam(), 30, 240, false,
                         reference_id, "111110000011111");
-                block->addSequence(seq);
+                block->addSequence(*seq);
+                delete seq;
                 seq = GenerateSequenceDetails(GetParam(), 30, 150, false,
                         forward_id, "111111100000111");
-                block->addSequence(seq);
+                block->addSequence(*seq);
+                delete seq;
                 seq = GenerateSequenceDetails(GetParam(), 50, 180, true,
                         reverse_id, "000111111111100");
-                block->addSequence(seq);
+                block->addSequence(*seq);
+                delete seq;
                 al->addBlock(block);
             }
 

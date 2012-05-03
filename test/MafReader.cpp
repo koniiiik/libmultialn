@@ -20,15 +20,13 @@ using ::testing::Test;
 // A few declarations to be able to test private code...
 namespace maf_reader
 {
-    typedef pair<string, SequenceDetails *> ParsedLine;
-
-    ParsedLine * parseMafLine(const string &line, BitSequenceFactory &factory,
+    SequenceDetails * parseMafLine(const string &line,
+            WholeGenomeAlignment &wga, BitSequenceFactory &factory,
             const set<string> *limit);
 }  // namespace maf_reader
 
 namespace
 {
-    using maf_reader::ParsedLine;
     using maf_reader::parseMafLine;
 
     BitSequenceRRRFactory factory;
@@ -36,55 +34,53 @@ namespace
     string test_line = "s hg18.chr7    27578828 38 + 158545518 "
         "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG";
 
-    void VerifyParsedTestLine(ParsedLine *pline)
+    void VerifyParsedTestLine(SequenceDetails *seq)
     {
-        ASSERT_TRUE(NULL != pline);
-        EXPECT_EQ("hg18.chr7", pline->first);
-        EXPECT_EQ(27578828, pline->second->get_start());
-        EXPECT_EQ(38, pline->second->get_size());
-        EXPECT_EQ(158545518, pline->second->get_src_size());
-        EXPECT_EQ(0, pline->second->sequenceToAlignment(27578828));
-        EXPECT_EQ(2, pline->second->sequenceToAlignment(27578830));
-        EXPECT_EQ(4, pline->second->sequenceToAlignment(27578831));
-        EXPECT_EQ(26, pline->second->sequenceToAlignment(27578850));
-        EXPECT_EQ(41, pline->second->sequenceToAlignment(27578865));
-        EXPECT_THROW(pline->second->sequenceToAlignment(27578827),
-                OutOfSequence);
-        EXPECT_THROW(pline->second->sequenceToAlignment(27578866),
-                OutOfSequence);
+        ASSERT_TRUE(NULL != seq);
+        EXPECT_EQ(kReferenceSequenceId, seq->get_id());
+        EXPECT_EQ(27578828, seq->get_start());
+        EXPECT_EQ(38, seq->get_size());
+        EXPECT_EQ(158545518, seq->get_src_size());
+        EXPECT_EQ(0, seq->sequenceToAlignment(27578828));
+        EXPECT_EQ(2, seq->sequenceToAlignment(27578830));
+        EXPECT_EQ(4, seq->sequenceToAlignment(27578831));
+        EXPECT_EQ(26, seq->sequenceToAlignment(27578850));
+        EXPECT_EQ(41, seq->sequenceToAlignment(27578865));
+        EXPECT_THROW(seq->sequenceToAlignment(27578827), OutOfSequence);
+        EXPECT_THROW(seq->sequenceToAlignment(27578866), OutOfSequence);
     }
 
     TEST(MafReaderTest, LineParser)
     {
-        ParsedLine *pline;
-        ASSERT_NO_THROW(pline = parseMafLine(test_line, factory, NULL));
+        WholeGenomeAlignment wga("hg18.chr7", NULL);
+        SequenceDetails *seq;
+        ASSERT_NO_THROW(seq = parseMafLine(test_line, wga, factory, NULL));
         {
             SCOPED_TRACE("");
-            VerifyParsedTestLine(pline);
+            VerifyParsedTestLine(seq);
         }
-        delete pline->second;
-        delete pline;
+        delete seq;
 
         set<string> limit;
         limit.insert("random1");
         limit.insert("random2");
-        EXPECT_TRUE(NULL == parseMafLine(test_line, factory, &limit));
+        EXPECT_TRUE(NULL == parseMafLine(test_line, wga, factory, &limit));
 
         limit.insert("hg18.chr7");
-        ASSERT_NO_THROW(pline = parseMafLine(test_line, factory, &limit));
+        ASSERT_NO_THROW(seq = parseMafLine(test_line, wga, factory, &limit));
         {
             SCOPED_TRACE("");
-            VerifyParsedTestLine(pline);
+            VerifyParsedTestLine(seq);
         }
-        delete pline->second;
-        delete pline;
+        delete seq;
 
-        EXPECT_THROW(parseMafLine("random useless stuff", factory, NULL),
-                ParseError);
-        EXPECT_THROW(parseMafLine("s name 47 12 + 470 ", factory, NULL), ParseError);
-        EXPECT_THROW(parseMafLine("s panTro1.chr6 28741140Invalid! 38 + 161576975i "
-                    "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG", factory,
+        EXPECT_THROW(parseMafLine("random useless stuff", wga, factory,
                     NULL), ParseError);
+        EXPECT_THROW(parseMafLine("s name 47 12 + 470 ", wga, factory,
+                    NULL), ParseError);
+        EXPECT_THROW(parseMafLine("s panTro1.chr6 28741140Invalid! 38 + 161576975i "
+                    "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG", wga,
+                    factory, NULL), ParseError);
     }
 
     string test_file = "track name=euArc visibility=pack\n\

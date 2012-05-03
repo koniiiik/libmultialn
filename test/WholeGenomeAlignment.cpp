@@ -36,26 +36,26 @@ namespace
 
                 block = new AlignmentBlock();
                 seq = GenerateSequenceDetails(GetParam(), 20, 240, false,
-                        "111110000011111");
-                block->addSequence(reference_id, seq);
+                        reference_id, "111110000011111");
+                block->addSequence(seq);
                 seq = GenerateSequenceDetails(GetParam(), 10, 150, false,
-                        "111111100000111");
-                block->addSequence(forward_id, seq);
+                        forward_id, "111111100000111");
+                block->addSequence(seq);
                 seq = GenerateSequenceDetails(GetParam(), 150, 180, true,
-                        "000111111111100");
-                block->addSequence(reverse_id, seq);
+                        reverse_id, "000111111111100");
+                block->addSequence(seq);
                 al->addBlock(block);
 
                 block = new AlignmentBlock();
                 seq = GenerateSequenceDetails(GetParam(), 30, 240, false,
-                        "111110000011111");
-                block->addSequence(reference_id, seq);
+                        reference_id, "111110000011111");
+                block->addSequence(seq);
                 seq = GenerateSequenceDetails(GetParam(), 30, 150, false,
-                        "111111100000111");
-                block->addSequence(forward_id, seq);
+                        forward_id, "111111100000111");
+                block->addSequence(seq);
                 seq = GenerateSequenceDetails(GetParam(), 50, 180, true,
-                        "000111111111100");
-                block->addSequence(reverse_id, seq);
+                        reverse_id, "000111111111100");
+                block->addSequence(seq);
                 al->addBlock(block);
             }
 
@@ -76,9 +76,21 @@ namespace
                 SequenceDoesNotExist);
     }
 
-    TEST_P(WholeGenomeAlignmentTest, SequenceIdCount)
+    TEST_P(WholeGenomeAlignmentTest, SequenceId)
     {
         EXPECT_EQ(3, al->countKnownSequences());
+        EXPECT_NO_THROW(al->getSequenceId("reference"));
+        EXPECT_EQ(kReferenceSequenceId,
+                al->requestSequenceId("reference"));
+
+        EXPECT_THROW(al->getSequenceId("extra"), SequenceDoesNotExist);
+        seqid_t id;
+        EXPECT_NO_THROW(id = al->requestSequenceId("extra"));
+        EXPECT_NO_THROW(al->getSequenceId("extra"));
+        EXPECT_EQ(id, al->getSequenceId("extra"));
+        EXPECT_EQ(id, al->requestSequenceId("extra"));
+        EXPECT_EQ(kReferenceSequenceId,
+                al->requestSequenceId("reference"));
     }
 
     INSTANTIATE_BITSEQ_TEST_P(WholeGenomeAlignmentTest);

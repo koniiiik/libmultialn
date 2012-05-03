@@ -68,7 +68,7 @@ class AlignmentBlockStorage
         ** Throws OutOfSequence in case the position is not contained in
         ** any block.
         */
-        virtual const AlignmentBlock * getBlock(const size_t pos);
+        virtual AlignmentBlock * getBlock(const size_t pos);
 
         /*
         ** Analogic to the STL first method on containers, returns an

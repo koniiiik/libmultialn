@@ -25,7 +25,7 @@ WholeGenomeAlignment::~WholeGenomeAlignment()
 size_t WholeGenomeAlignment::mapPositionToInformant(size_t position,
         const string &informant, IntervalBoundary boundary) const
 {
-    const AlignmentBlock * block = this->storage_->getBlock(position);
+    AlignmentBlock * block = this->storage_->getBlock(position);
     seqid_t informant_id = this->getSequenceId(informant);
     return block->mapPositionToInformant(position, informant_id, boundary);
 }

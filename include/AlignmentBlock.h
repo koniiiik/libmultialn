@@ -1,6 +1,7 @@
 #ifndef ALIGNMENTBLOCK_H
 #define ALIGNMENTBLOCK_H
 
+#include <vector>
 #include <map>
 #include <string>
 #include <exception>
@@ -23,17 +24,13 @@ class AlignmentBlock
     public:
         typedef std::map<seqid_t, size_t> Mapping;
 
-        AlignmentBlock()
+        AlignmentBlock():
+            prepared_(false)
         { }
         AlignmentBlock(const AlignmentBlock &ab);
         ~AlignmentBlock();
 
-        AlignmentBlock & operator=(const AlignmentBlock &other)
-        {
-            this->clearSequences();
-            this->copySequences(other.sequences_);
-            return (*this);
-        }
+        AlignmentBlock & operator=(const AlignmentBlock &other);
 
         /*
         ** Takes a position in the reference sequence and maps it to a
@@ -46,7 +43,7 @@ class AlignmentBlock
         ** present in this block.
         */
         size_t mapPositionToInformant(const size_t pos, seqid_t informant,
-                const IntervalBoundary boundary=INTERVAL_BEGIN) const;
+                const IntervalBoundary boundary=INTERVAL_BEGIN);
         /*
         ** Takes a position in the reference sequence and maps it to those
         ** informants where such mapping is possible.
@@ -55,29 +52,30 @@ class AlignmentBlock
         ** reference sequence.
         */
         const Mapping * mapPositionToAll(const size_t pos,
-                const IntervalBoundary boundary=INTERVAL_BEGIN) const;
+                const IntervalBoundary boundary=INTERVAL_BEGIN);
 
         /*
         ** Returns the specified sequence. Throws SequenceDoesNotExist if
         ** not present.
         */
-        const SequenceDetails * getSequence(seqid_t sequence) const;
+        const SequenceDetails * getSequence(seqid_t sequence);
         /*
         ** Returns the reference sequence. Throws SequenceDoesNotExist if
         ** the sequence has not yet been added to this block.
         */
-        const SequenceDetails * getReferenceSequence() const
+        const SequenceDetails * getReferenceSequence()
         {
             return this->getSequence(kReferenceSequenceId);
         }
 
-        void addSequence(seqid_t id, const SequenceDetails *details)
+        void addSequence(const SequenceDetails *details)
         {
-            this->sequences_[id] = details;
+            this->prepared_ = false;
+            this->sequences_.push_back(details);
         }
 
-        static bool compareReferencePosition(const AlignmentBlock *a,
-                const AlignmentBlock *b)
+        static bool compareReferencePosition(AlignmentBlock *a,
+                AlignmentBlock *b)
         {
             return (a->getReferenceSequence()->get_start()
                     < b->getReferenceSequence()->get_start());
@@ -85,9 +83,11 @@ class AlignmentBlock
 
 
     private:
-        typedef std::map<seqid_t, const SequenceDetails *> Container;
+        typedef std::vector<const SequenceDetails *> Container;
         Container sequences_;
+        bool prepared_;
 
+        void prepare();
         void clearSequences();
         void copySequences(const Container &sequences);
 };

@@ -27,11 +27,11 @@ namespace
 
                 SequenceDetails *seq1, *seq2, *seq3;
                 seq1 = GenerateSequenceDetails(&fact_rg2, 12, 470, false,
-                        "001011");
+                        kReferenceSequenceId, "001011");
                 seq2 = GenerateSequenceDetails(&fact_rg2, 15, 470, false,
-                        "1111111111");
+                        kReferenceSequenceId, "1111111111");
                 seq3 = GenerateSequenceDetails(&fact_rg2, 30, 470, false,
-                        "11111");
+                        kReferenceSequenceId, "11111");
 
                 AlignmentBlock *block1, *block2, *block3;
 
@@ -39,9 +39,9 @@ namespace
                 block2 = new AlignmentBlock();
                 block3 = new AlignmentBlock();
 
-                block1->addSequence(kReferenceSequenceId, seq1);
-                block2->addSequence(kReferenceSequenceId, seq2);
-                block3->addSequence(kReferenceSequenceId, seq3);
+                block1->addSequence(seq1);
+                block2->addSequence(seq2);
+                block3->addSequence(seq3);
 
                 storage->addBlock(block3);
                 storage->addBlock(block1);

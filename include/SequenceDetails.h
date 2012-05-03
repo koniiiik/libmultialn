@@ -22,10 +22,10 @@ class SequenceDetails
 {
     public:
         SequenceDetails(size_t start, size_t size, bool reverse,
-                        size_t src_size,
+                        size_t src_size, seqid_t id,
                         cds_static::BitSequence *sequence):
             start_(start), size_(size), src_size_(src_size),
-            reverse_(reverse), sequence_(sequence)
+            reverse_(reverse), id_(id), sequence_(sequence)
         { }
 
         /*
@@ -60,6 +60,16 @@ class SequenceDetails
         {
             return this->src_size_;
         }
+        seqid_t get_id() const
+        {
+            return this->id_;
+        }
+
+        static bool compareById(const SequenceDetails *d1,
+                const SequenceDetails *d2)
+        {
+            return d1->get_id() < d2->get_id();
+        }
 
 
     private:
@@ -68,6 +78,7 @@ class SequenceDetails
         size_t start_, size_, src_size_;
         // true if from reverse-complement source
         bool reverse_;
+        seqid_t id_;
         std::shared_ptr<cds_static::BitSequence> sequence_;
 };
 

@@ -1,7 +1,9 @@
 #include <string>
 #include <sstream>
 #include <cassert>
+#include <vector>
 #include <map>
+#include <algorithm>
 #include <BitString.h>
 #include <BitSequence.h>
 
@@ -10,11 +12,10 @@
 #include <MultialnConstants.h>
 
 
-/*
-** Public methods
-*/
+using std::sort;
 
-AlignmentBlock::AlignmentBlock(const AlignmentBlock &ab)
+AlignmentBlock::AlignmentBlock(const AlignmentBlock &ab):
+    prepared_(false)
 {
     this->copySequences(ab.sequences_);
 }
@@ -24,8 +25,16 @@ AlignmentBlock::~AlignmentBlock()
     this->clearSequences();
 }
 
+AlignmentBlock & AlignmentBlock::operator=(const AlignmentBlock &other)
+{
+    this->clearSequences();
+    this->copySequences(other.sequences_);
+    this->prepared_ = false;
+    return (*this);
+}
+
 size_t AlignmentBlock::mapPositionToInformant(const size_t pos,
-        seqid_t informant, const IntervalBoundary boundary) const
+        seqid_t informant, const IntervalBoundary boundary)
 {
     const SequenceDetails *ref = this->getReferenceSequence();
     size_t alignment_pos = ref->sequenceToAlignment(pos);
@@ -34,19 +43,20 @@ size_t AlignmentBlock::mapPositionToInformant(const size_t pos,
 }
 
 const AlignmentBlock::Mapping * AlignmentBlock::mapPositionToAll(const size_t pos,
-        const IntervalBoundary boundary) const
+        const IntervalBoundary boundary)
 {
     Mapping * mapping = new Mapping;
     for (Container::const_iterator it = this->sequences_.begin();
             it != this->sequences_.end(); ++it)
     {
-        if (it->first == kReferenceSequenceId)
+        seqid_t seq_id = (*it)->get_id();
+        if (seq_id == kReferenceSequenceId)
             continue;
         try
         {
-            size_t pos_inf = this->mapPositionToInformant(pos, it->first,
+            size_t pos_inf = this->mapPositionToInformant(pos, seq_id,
                     boundary);
-            (*mapping)[it->first] = pos_inf;
+            (*mapping)[seq_id] = pos_inf;
         }
         // If the mapping fails with an exception, we want to silently
         // ignore it.
@@ -56,14 +66,46 @@ const AlignmentBlock::Mapping * AlignmentBlock::mapPositionToAll(const size_t po
     return mapping;
 }
 
-const SequenceDetails * AlignmentBlock::getSequence(seqid_t sequence) const
+const SequenceDetails * AlignmentBlock::getSequence(seqid_t sequence)
 {
-    Container::const_iterator it = this->sequences_.find(sequence);
-    if (it == this->sequences_.end())
+    if (this->sequences_.empty())
     {
         throw SequenceDoesNotExist();
     }
-    return it->second;
+
+    this->prepare();
+    size_t start = 0, end = this->sequences_.size();
+    while ((end - start) > 1)
+    {
+        size_t middle = (start + end) / 2;
+        if (this->sequences_[middle]->get_id() <= sequence)
+        {
+            start = middle;
+        }
+        else
+        {
+            end = middle;
+        }
+    }
+
+    if (this->sequences_[start]->get_id() != sequence)
+    {
+        throw SequenceDoesNotExist();
+    }
+
+    return this->sequences_[start];
+}
+
+void AlignmentBlock::prepare()
+{
+    if (this->prepared_)
+    {
+        return;
+    }
+
+    sort(this->sequences_.begin(), this->sequences_.end(),
+            SequenceDetails::compareById);
+    this->prepared_ = true;
 }
 
 void AlignmentBlock::clearSequences()
@@ -71,7 +113,7 @@ void AlignmentBlock::clearSequences()
     for (Container::iterator it = this->sequences_.begin();
             it != this->sequences_.end(); ++it)
     {
-        delete it->second;
+        delete *it;
     }
     this->sequences_.clear();
 }
@@ -84,6 +126,6 @@ void AlignmentBlock::copySequences(const Container &sequences)
     for (Container::iterator it = this->sequences_.begin();
             it != this->sequences_.end(); ++it)
     {
-        it->second = new SequenceDetails(*(it->second));
+        *it = new SequenceDetails(**it);
     }
 }

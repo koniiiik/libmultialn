@@ -22,8 +22,6 @@ using std::istream;
 using std::string;
 using std::set;
 
-typedef pair<string, SequenceDetails *> ParsedLine;
-
 string getNextLine(istream &s)
 {
     using std::getline;
@@ -38,8 +36,8 @@ string getNextLine(istream &s)
     return buf;
 }
 
-ParsedLine * parseMafLine(const string &line, BitSequenceFactory &factory,
-        const set<string> *limit)
+SequenceDetails * parseMafLine(const string &line, WholeGenomeAlignment &wga,
+        BitSequenceFactory &factory, const set<string> *limit)
 {
     std::istringstream s(line);
     s.exceptions(istream::failbit | istream::badbit);
@@ -76,10 +74,12 @@ ParsedLine * parseMafLine(const string &line, BitSequenceFactory &factory,
 
         cds_static::BitSequence *bitseq = factory.getInstance(bitstr);
 
+        seqid_t id = wga.requestSequenceId(name);
+
         // We have all we need, create and return the instance.
         SequenceDetails *datials = new SequenceDetails(start, size, reverse,
-                src_size, bitseq);
-        return new ParsedLine(name, datials);
+                src_size, id, bitseq);
+        return datials;
     }
     catch (std::ios_base::failure &e)
     {
@@ -133,12 +133,11 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
                     {
                         throw ParseError();
                     }
-                    ParsedLine *pline = parseMafLine(buf, factory, limit);
-                    if (pline != NULL)
+                    SequenceDetails *details = parseMafLine(buf, wga,
+                            factory, limit);
+                    if (details != NULL)
                     {
-                        seqid_t id = wga.requestSequenceId(pline->first);
-                        block->addSequence(id, pline->second);
-                        delete pline;
+                        block->addSequence(details);
                     }
                     buf = getNextLine(s);
                 }

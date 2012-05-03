@@ -27,11 +27,12 @@ namespace
                 // informant1:  11111100000000001111111100000000
                 // informant2:  00001111111111110000001111111111
                 seq1 = GenerateSequenceDetails(GetParam(), 47, 147, false,
+                        kReferenceSequenceId,
                         "11111111000000000000001111111111");
                 seq2 = GenerateSequenceDetails(GetParam(), 47, 470, false,
-                        "11111100000000001111111100000000");
+                        2, "11111100000000001111111100000000");
                 seq3 = GenerateSequenceDetails(GetParam(), 47, 747, false,
-                        "00001111111111110000001111111111");
+                        3, "00001111111111110000001111111111");
             }
 
             virtual void TearDown()
@@ -43,25 +44,25 @@ namespace
     TEST_P(AlignmentBlockTest, Creation)
     {
         EXPECT_THROW(block->getReferenceSequence(), SequenceDoesNotExist);
-        block->addSequence(2, seq2);
+        block->addSequence(seq2);
         EXPECT_EQ(seq2, block->getSequence(2));
         EXPECT_THROW(block->getReferenceSequence(), SequenceDoesNotExist);
         EXPECT_THROW(block->mapPositionToInformant(47, 2),
                 SequenceDoesNotExist);
-        block->addSequence(kReferenceSequenceId, seq1);
+        block->addSequence(seq1);
         EXPECT_NO_THROW(block->mapPositionToInformant(47, 2));
         EXPECT_EQ(block->getReferenceSequence(), seq1);
         EXPECT_THROW(block->mapPositionToInformant(51, 3),
                 SequenceDoesNotExist);
-        block->addSequence(3, seq3);
+        block->addSequence(seq3);
         EXPECT_NO_THROW(block->mapPositionToInformant(51, 3));
     }
 
     TEST_P(AlignmentBlockTest, SingleMaps)
     {
-        block->addSequence(kReferenceSequenceId, seq1);
-        block->addSequence(2, seq2);
-        block->addSequence(3, seq3);
+        block->addSequence(seq1);
+        block->addSequence(seq2);
+        block->addSequence(seq3);
 
         // The first 4 positions are in informant1 only with no shifts.
         EXPECT_EQ(48, block->mapPositionToInformant(48, 2));
@@ -94,8 +95,8 @@ namespace
 
     TEST_P(AlignmentBlockTest, MultiMaps)
     {
-        block->addSequence(kReferenceSequenceId, seq1);
-        block->addSequence(2, seq2);
+        block->addSequence(seq1);
+        block->addSequence(seq2);
 
         // The result of mapPositionToAll should be a map containing only
         // informant1.
@@ -109,7 +110,7 @@ namespace
         EXPECT_EQ(48, m->find(2)->second);
         delete m;
 
-        block->addSequence(3, seq3);
+        block->addSequence(seq3);
 
         // Position 55 has clear mapping to both informants.
         ASSERT_NO_THROW(m = block->mapPositionToAll(55));
@@ -151,12 +152,12 @@ namespace
         AlignmentBlock *a = new AlignmentBlock();
         AlignmentBlock *b = new AlignmentBlock();
         SequenceDetails *seq1 = GenerateSequenceDetails(&fact_rg2, 47, 147, false,
-                "001011");
+                kReferenceSequenceId, "001011");
         SequenceDetails *seq2 = GenerateSequenceDetails(&fact_rg2, 74, 470, false,
-                "110100");
+                kReferenceSequenceId, "110100");
 
-        a->addSequence(kReferenceSequenceId, seq1);
-        b->addSequence(kReferenceSequenceId, seq2);
+        a->addSequence(seq1);
+        b->addSequence(seq2);
 
         EXPECT_TRUE(AlignmentBlock::compareReferencePosition(a, b));
         EXPECT_FALSE(AlignmentBlock::compareReferencePosition(b, a));

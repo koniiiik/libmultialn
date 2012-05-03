@@ -3,6 +3,7 @@
 #include <BitSequence.h>
 #include <SequenceDetails.h>
 #include <BitSequenceFactory.h>
+#include <MultialnConstants.h>
 
 #include "SequenceGenerator.h"
 
@@ -19,9 +20,10 @@ cds_static::BitSequence * GenerateBitSequence(const BitSequenceFactory *factory,
 }
 
 SequenceDetails * GenerateSequenceDetails(const BitSequenceFactory *factory,
-        size_t start, size_t total, bool reverse,
+        size_t start, size_t total, bool reverse, seqid_t id,
         const std::string &contents)
 {
     cds_static::BitSequence *seq = GenerateBitSequence(factory, contents);
-    return new SequenceDetails(start, seq->countOnes(), reverse, total, seq);
+    return new SequenceDetails(start, seq->countOnes(), reverse, total,
+            id, seq);
 }

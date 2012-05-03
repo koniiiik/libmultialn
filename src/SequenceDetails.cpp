@@ -6,7 +6,7 @@
 
 size_t SequenceDetails::sequenceToAlignment(size_t index) const
 {
-    if (index < this->start_ || index >= (this->start_ + this->size_))
+    if (index < this->start_ || index >= (this->start_ + this->get_size()))
     {
         throw OutOfSequence();
     }
@@ -29,7 +29,7 @@ size_t SequenceDetails::alignmentToSequence(size_t index,
         }
         // rank can be 0 iff boundary is INTERVAL_END and the sought
         // position is before our block.
-        if (rank == 0 || rank > this->size_)
+        if (rank == 0 || rank > this->get_size())
         {
             throw OutOfSequence();
         }

@@ -8,10 +8,11 @@
 #include <MultialnConstants.h>
 
 
-cds_static::BitSequence * GenerateBitSequence(const BitSequenceFactory *,
-        const std::string &);
+cds_static::BitSequence * GenerateBitSequence(
+        const BitSequenceFactory *factory, const std::string &contents);
 
-SequenceDetails * GenerateSequenceDetails(const BitSequenceFactory *, size_t,
-        size_t, bool, seqid_t, const std::string &);
+SequenceDetails * GenerateSequenceDetails(const BitSequenceFactory *factory,
+        size_t start, size_t total, bool reverse, seqid_t id,
+        const std::string &contents);
 
 #endif /* SEQUENCEGENERATOR_H */

@@ -24,6 +24,5 @@ SequenceDetails * GenerateSequenceDetails(const BitSequenceFactory *factory,
         const std::string &contents)
 {
     cds_static::BitSequence *seq = GenerateBitSequence(factory, contents);
-    return new SequenceDetails(start, seq->countOnes(), reverse, total,
-            id, seq);
+    return new SequenceDetails(start, reverse, total, id, seq);
 }

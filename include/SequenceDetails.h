@@ -21,11 +21,10 @@ class OutOfSequence: public std::exception
 class SequenceDetails
 {
     public:
-        SequenceDetails(size_t start, size_t size, bool reverse,
-                        size_t src_size, seqid_t id,
-                        cds_static::BitSequence *sequence):
-            start_(start), size_(size), src_size_(src_size),
-            reverse_(reverse), id_(id), sequence_(sequence)
+        SequenceDetails(size_t start, bool reverse, size_t src_size,
+                        seqid_t id, cds_static::BitSequence *sequence):
+            start_(start), src_size_(src_size), reverse_(reverse),
+            id_(id), sequence_(sequence)
         { }
 
         /*
@@ -54,7 +53,7 @@ class SequenceDetails
         }
         size_t get_size() const
         {
-            return this->size_;
+            return this->sequence_->countOnes();
         }
         size_t get_src_size() const
         {
@@ -73,9 +72,9 @@ class SequenceDetails
 
 
     private:
-        // position in the source sequence, size of this subsequence and
-        // the size of the original sequence
-        size_t start_, size_, src_size_;
+        // position in the source sequence and the size of the original
+        // sequence
+        size_t start_, src_size_;
         // true if from reverse-complement source
         bool reverse_;
         seqid_t id_;

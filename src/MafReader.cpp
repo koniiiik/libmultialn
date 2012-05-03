@@ -77,7 +77,7 @@ SequenceDetails * parseMafLine(const string &line, WholeGenomeAlignment &wga,
         seqid_t id = wga.requestSequenceId(name);
 
         // We have all we need, create and return the instance.
-        SequenceDetails *datials = new SequenceDetails(start, size, reverse,
+        SequenceDetails *datials = new SequenceDetails(start, reverse,
                 src_size, id, bitseq);
         return datials;
     }

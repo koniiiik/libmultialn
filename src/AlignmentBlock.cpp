@@ -9,17 +9,12 @@
 #include <SequenceDetails.h>
 #include <MultialnConstants.h>
 
-#ifndef RG_SEQUENCE_FACTOR
-    #define RG_SEQUENCE_FACTOR 20
-#endif
-
 
 /*
 ** Public methods
 */
 
-AlignmentBlock::AlignmentBlock(const AlignmentBlock &ab):
-    reference_name_(ab.reference_name_)
+AlignmentBlock::AlignmentBlock(const AlignmentBlock &ab)
 {
     this->copySequences(ab.sequences_);
 }
@@ -30,7 +25,7 @@ AlignmentBlock::~AlignmentBlock()
 }
 
 size_t AlignmentBlock::mapPositionToInformant(const size_t pos,
-        const std::string &informant, const IntervalBoundary boundary) const
+        seqid_t informant, const IntervalBoundary boundary) const
 {
     const SequenceDetails *ref = this->getReferenceSequence();
     size_t alignment_pos = ref->sequenceToAlignment(pos);
@@ -45,7 +40,7 @@ const AlignmentBlock::Mapping * AlignmentBlock::mapPositionToAll(const size_t po
     for (Container::const_iterator it = this->sequences_.begin();
             it != this->sequences_.end(); ++it)
     {
-        if (it->first == (*this->reference_name_))
+        if (it->first == kReferenceSequenceId)
             continue;
         try
         {
@@ -61,9 +56,9 @@ const AlignmentBlock::Mapping * AlignmentBlock::mapPositionToAll(const size_t po
     return mapping;
 }
 
-const SequenceDetails * AlignmentBlock::getSequence(const std::string &name) const
+const SequenceDetails * AlignmentBlock::getSequence(seqid_t sequence) const
 {
-    Container::const_iterator it = this->sequences_.find(name);
+    Container::const_iterator it = this->sequences_.find(sequence);
     if (it == this->sequences_.end())
     {
         throw SequenceDoesNotExist();

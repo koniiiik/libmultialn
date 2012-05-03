@@ -16,13 +16,11 @@ namespace
         protected:
 
             AlignmentBlock *block;
-            std::string reference_name;
             SequenceDetails *seq1, *seq2, *seq3;
 
             virtual void SetUp()
             {
-                reference_name = "reference";
-                block = new AlignmentBlock(&reference_name);
+                block = new AlignmentBlock();
 
                 // These correspond to the following alignment:
                 // reference:   11111111000000000000001111111111
@@ -45,83 +43,83 @@ namespace
     TEST_P(AlignmentBlockTest, Creation)
     {
         EXPECT_THROW(block->getReferenceSequence(), SequenceDoesNotExist);
-        block->addSequence("informant1", seq2);
-        EXPECT_EQ(seq2, block->getSequence("informant1"));
+        block->addSequence(2, seq2);
+        EXPECT_EQ(seq2, block->getSequence(2));
         EXPECT_THROW(block->getReferenceSequence(), SequenceDoesNotExist);
-        EXPECT_THROW(block->mapPositionToInformant(47, "informant1"),
+        EXPECT_THROW(block->mapPositionToInformant(47, 2),
                 SequenceDoesNotExist);
-        block->addSequence("reference", seq1);
-        EXPECT_NO_THROW(block->mapPositionToInformant(47, "informant1"));
+        block->addSequence(kReferenceSequenceId, seq1);
+        EXPECT_NO_THROW(block->mapPositionToInformant(47, 2));
         EXPECT_EQ(block->getReferenceSequence(), seq1);
-        EXPECT_THROW(block->mapPositionToInformant(51, "informant2"),
+        EXPECT_THROW(block->mapPositionToInformant(51, 3),
                 SequenceDoesNotExist);
-        block->addSequence("informant2", seq3);
-        EXPECT_NO_THROW(block->mapPositionToInformant(51, "informant2"));
+        block->addSequence(3, seq3);
+        EXPECT_NO_THROW(block->mapPositionToInformant(51, 3));
     }
 
     TEST_P(AlignmentBlockTest, SingleMaps)
     {
-        block->addSequence("reference", seq1);
-        block->addSequence("informant1", seq2);
-        block->addSequence("informant2", seq3);
+        block->addSequence(kReferenceSequenceId, seq1);
+        block->addSequence(2, seq2);
+        block->addSequence(3, seq3);
 
         // The first 4 positions are in informant1 only with no shifts.
-        EXPECT_EQ(48, block->mapPositionToInformant(48, "informant1"));
-        EXPECT_EQ(49, block->mapPositionToInformant(49, "informant1",
+        EXPECT_EQ(48, block->mapPositionToInformant(48, 2));
+        EXPECT_EQ(49, block->mapPositionToInformant(49, 2,
                     INTERVAL_BEGIN));
-        EXPECT_EQ(50, block->mapPositionToInformant(50, "informant1",
+        EXPECT_EQ(50, block->mapPositionToInformant(50, 2,
                     INTERVAL_END));
 
         // Mapping positions 53 and 54 to informant1 depends on the chosen
         // interval boundary.
-        EXPECT_EQ(52, block->mapPositionToInformant(53, "informant1",
+        EXPECT_EQ(52, block->mapPositionToInformant(53, 2,
                     INTERVAL_END));
-        EXPECT_EQ(53, block->mapPositionToInformant(54, "informant1",
+        EXPECT_EQ(53, block->mapPositionToInformant(54, 2,
                     INTERVAL_BEGIN));
         // INTERVAL_BEGIN is the default
-        EXPECT_EQ(53, block->mapPositionToInformant(53, "informant1"));
+        EXPECT_EQ(53, block->mapPositionToInformant(53, 2));
 
         // Positions 55, 56 in reference are shifted by 4 in both
         // informants.
-        EXPECT_EQ(59, block->mapPositionToInformant(55, "informant1"));
-        EXPECT_EQ(60, block->mapPositionToInformant(56, "informant1"));
-        EXPECT_EQ(59, block->mapPositionToInformant(55, "informant2"));
-        EXPECT_EQ(60, block->mapPositionToInformant(56, "informant2"));
+        EXPECT_EQ(59, block->mapPositionToInformant(55, 2));
+        EXPECT_EQ(60, block->mapPositionToInformant(56, 2));
+        EXPECT_EQ(59, block->mapPositionToInformant(55, 3));
+        EXPECT_EQ(60, block->mapPositionToInformant(56, 3));
 
         // Finally, positions 57 through 64 are shifted by 4 in
         // informant2.
-        EXPECT_EQ(61, block->mapPositionToInformant(57, "informant2"));
-        EXPECT_EQ(68, block->mapPositionToInformant(64, "informant2"));
+        EXPECT_EQ(61, block->mapPositionToInformant(57, 3));
+        EXPECT_EQ(68, block->mapPositionToInformant(64, 3));
     }
 
     TEST_P(AlignmentBlockTest, MultiMaps)
     {
-        block->addSequence("reference", seq1);
-        block->addSequence("informant1", seq2);
+        block->addSequence(kReferenceSequenceId, seq1);
+        block->addSequence(2, seq2);
 
         // The result of mapPositionToAll should be a map containing only
         // informant1.
         const AlignmentBlock::Mapping *m;
         ASSERT_NO_THROW(m = block->mapPositionToAll(48));
         EXPECT_EQ(1, m->size());
-        EXPECT_EQ(1, m->count("informant1"));
-        EXPECT_EQ(0, m->count("informant2"));
-        ASSERT_TRUE(m->end() != m->find("informant1"));
-        EXPECT_TRUE(m->end() == m->find("informant2"));
-        EXPECT_EQ(48, m->find("informant1")->second);
+        EXPECT_EQ(1, m->count(2));
+        EXPECT_EQ(0, m->count(3));
+        ASSERT_TRUE(m->end() != m->find(2));
+        EXPECT_TRUE(m->end() == m->find(3));
+        EXPECT_EQ(48, m->find(2)->second);
         delete m;
 
-        block->addSequence("informant2", seq3);
+        block->addSequence(3, seq3);
 
         // Position 55 has clear mapping to both informants.
         ASSERT_NO_THROW(m = block->mapPositionToAll(55));
         EXPECT_EQ(2, m->size());
-        EXPECT_EQ(1, m->count("informant1"));
-        EXPECT_EQ(1, m->count("informant2"));
-        ASSERT_TRUE(m->end() != m->find("informant1"));
-        ASSERT_TRUE(m->end() != m->find("informant2"));
-        EXPECT_EQ(59, m->find("informant1")->second);
-        EXPECT_EQ(59, m->find("informant2")->second);
+        EXPECT_EQ(1, m->count(2));
+        EXPECT_EQ(1, m->count(3));
+        ASSERT_TRUE(m->end() != m->find(2));
+        ASSERT_TRUE(m->end() != m->find(3));
+        EXPECT_EQ(59, m->find(2)->second);
+        EXPECT_EQ(59, m->find(3)->second);
         delete m;
 
         // Position 60 at the beginning of an interval can only be mapped
@@ -129,37 +127,36 @@ namespace
         // trailing sequence of zeroes.
         ASSERT_NO_THROW(m = block->mapPositionToAll(60, INTERVAL_BEGIN));
         EXPECT_EQ(1, m->size());
-        EXPECT_EQ(0, m->count("informant1"));
-        EXPECT_EQ(1, m->count("informant2"));
-        ASSERT_TRUE(m->end() == m->find("informant1"));
-        EXPECT_TRUE(m->end() != m->find("informant2"));
-        EXPECT_EQ(64, m->find("informant2")->second);
+        EXPECT_EQ(0, m->count(2));
+        EXPECT_EQ(1, m->count(3));
+        ASSERT_TRUE(m->end() == m->find(2));
+        EXPECT_TRUE(m->end() != m->find(3));
+        EXPECT_EQ(64, m->find(3)->second);
         delete m;
 
         // Similarly, at the end of an interval, position 48 has no
         // mapping in informant2.
         ASSERT_NO_THROW(m = block->mapPositionToAll(48, INTERVAL_END));
         EXPECT_EQ(1, m->size());
-        EXPECT_EQ(1, m->count("informant1"));
-        EXPECT_EQ(0, m->count("informant2"));
-        ASSERT_TRUE(m->end() != m->find("informant1"));
-        EXPECT_TRUE(m->end() == m->find("informant2"));
-        EXPECT_EQ(48, m->find("informant1")->second);
+        EXPECT_EQ(1, m->count(2));
+        EXPECT_EQ(0, m->count(3));
+        ASSERT_TRUE(m->end() != m->find(2));
+        EXPECT_TRUE(m->end() == m->find(3));
+        EXPECT_EQ(48, m->find(2)->second);
         delete m;
     }
 
     TEST(AlignmentBlockStaticTest, Comparison)
     {
-        std::string reference_name = "reference";
-        AlignmentBlock *a = new AlignmentBlock(&reference_name);
-        AlignmentBlock *b = new AlignmentBlock(&reference_name);
+        AlignmentBlock *a = new AlignmentBlock();
+        AlignmentBlock *b = new AlignmentBlock();
         SequenceDetails *seq1 = GenerateSequenceDetails(&fact_rg2, 47, 147, false,
                 "001011");
         SequenceDetails *seq2 = GenerateSequenceDetails(&fact_rg2, 74, 470, false,
                 "110100");
 
-        a->addSequence(reference_name, seq1);
-        b->addSequence(reference_name, seq2);
+        a->addSequence(kReferenceSequenceId, seq1);
+        b->addSequence(kReferenceSequenceId, seq2);
 
         EXPECT_TRUE(AlignmentBlock::compareReferencePosition(a, b));
         EXPECT_FALSE(AlignmentBlock::compareReferencePosition(b, a));

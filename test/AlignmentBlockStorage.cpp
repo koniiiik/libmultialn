@@ -4,6 +4,7 @@
 #include <SequenceDetails.h>
 #include <AlignmentBlockStorage.h>
 #include <BinSearchAlignmentBlockStorage.h>
+#include <MultialnConstants.h>
 
 #include "SequenceGenerator.h"
 #include "BitSequenceFactoryDeclarations.h"
@@ -19,11 +20,9 @@ namespace
     {
         protected:
             AlignmentBlockStorage *storage;
-            string reference;
 
             virtual void SetUp()
             {
-                reference = "reference";
                 storage = new BinSearchAlignmentBlockStorage;
 
                 SequenceDetails *seq1, *seq2, *seq3;
@@ -36,13 +35,13 @@ namespace
 
                 AlignmentBlock *block1, *block2, *block3;
 
-                block1 = new AlignmentBlock(&reference);
-                block2 = new AlignmentBlock(&reference);
-                block3 = new AlignmentBlock(&reference);
+                block1 = new AlignmentBlock();
+                block2 = new AlignmentBlock();
+                block3 = new AlignmentBlock();
 
-                block1->addSequence(reference, seq1);
-                block2->addSequence(reference, seq2);
-                block3->addSequence(reference, seq3);
+                block1->addSequence(kReferenceSequenceId, seq1);
+                block2->addSequence(kReferenceSequenceId, seq2);
+                block3->addSequence(kReferenceSequenceId, seq3);
 
                 storage->addBlock(block3);
                 storage->addBlock(block1);

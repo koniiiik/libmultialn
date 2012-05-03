@@ -8,4 +8,8 @@ enum IntervalBoundary {
     INTERVAL_END,
 };
 
+typedef unsigned short int seqid_t;
+
+const seqid_t kReferenceSequenceId = -1;
+
 #endif /* MULTIALNCONSTANTS_H */

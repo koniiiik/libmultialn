@@ -3,7 +3,7 @@
 #include <SequenceDetails.h>
 
 
-const AlignmentBlock * AlignmentBlockStorage::getBlock( const size_t pos)
+const AlignmentBlock * AlignmentBlockStorage::getBlock(const size_t pos)
 {
     Iterator * it = this->find(pos);
     AlignmentBlock *block = &**it;

@@ -21,10 +21,9 @@ class SequenceDoesNotExist: public std::exception
 class AlignmentBlock
 {
     public:
-        typedef std::map<std::string, size_t> Mapping;
+        typedef std::map<seqid_t, size_t> Mapping;
 
-        AlignmentBlock(const std::string *reference_name):
-            reference_name_(reference_name)
+        AlignmentBlock()
         { }
         AlignmentBlock(const AlignmentBlock &ab);
         ~AlignmentBlock();
@@ -46,8 +45,7 @@ class AlignmentBlock
         ** Throws SequenceDoesNotExist in case the informant is not
         ** present in this block.
         */
-        size_t mapPositionToInformant(const size_t pos,
-                const std::string &informant,
+        size_t mapPositionToInformant(const size_t pos, seqid_t informant,
                 const IntervalBoundary boundary=INTERVAL_BEGIN) const;
         /*
         ** Takes a position in the reference sequence and maps it to those
@@ -60,23 +58,22 @@ class AlignmentBlock
                 const IntervalBoundary boundary=INTERVAL_BEGIN) const;
 
         /*
-        ** Returns the named sequence. Throws SequenceDoesNotExist if not
-        ** present.
+        ** Returns the specified sequence. Throws SequenceDoesNotExist if
+        ** not present.
         */
-        const SequenceDetails * getSequence(const std::string &name) const;
+        const SequenceDetails * getSequence(seqid_t sequence) const;
         /*
         ** Returns the reference sequence. Throws SequenceDoesNotExist if
         ** the sequence has not yet been added to this block.
         */
         const SequenceDetails * getReferenceSequence() const
         {
-            return this->getSequence(*(this->reference_name_));
+            return this->getSequence(kReferenceSequenceId);
         }
 
-        void addSequence(const std::string &name,
-                const SequenceDetails *details)
+        void addSequence(seqid_t id, const SequenceDetails *details)
         {
-            this->sequences_[name] = details;
+            this->sequences_[id] = details;
         }
 
         static bool compareReferencePosition(const AlignmentBlock *a,
@@ -88,11 +85,8 @@ class AlignmentBlock
 
 
     private:
-        typedef std::map<std::string, const SequenceDetails *> Container;
+        typedef std::map<seqid_t, const SequenceDetails *> Container;
         Container sequences_;
-        // This points to the string stored in the owning
-        // WholeGenomeAlignment.
-        const std::string *reference_name_;
 
         void clearSequences();
         void copySequences(const Container &sequences);

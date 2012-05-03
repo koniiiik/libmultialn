@@ -2,6 +2,7 @@
 #define WHOLEGENOMEALIGNMENT_H
 
 #include <string>
+#include <tuple>
 
 #include <AlignmentBlock.h>
 #include <SequenceDetails.h>
@@ -13,9 +14,7 @@ class WholeGenomeAlignment
 {
     public:
         WholeGenomeAlignment(const std::string &reference,
-                AlignmentBlockStorage * storage):
-            reference_(reference), storage_(storage)
-        { }
+                AlignmentBlockStorage * storage);
         ~WholeGenomeAlignment();
 
         const string & get_reference() const
@@ -47,8 +46,27 @@ class WholeGenomeAlignment
         */
         size_t getReferenceSize() const;
 
+        /*
+        ** Returns the ID associated to the specified sequence name. If
+        ** none exists, throws SequenceDoesNotExist.
+        */
+        seqid_t getSequenceId(const std::string &name) const;
+
+        /*
+        ** Requests for a new ID for the specified sequence. If the
+        ** sequence already has an ID associated, returns that one,
+        ** otherwise returns a new unique one.
+        **
+        ** TODO: handle the case where all IDs are taken
+        */
+        seqid_t requestSequenceId(const std::string &name);
+
+        size_t countKnownSequences() const;
+
 
     private:
+        std::map<seqid_t, std::tuple<std::string> > sequence_details_map_;
+        std::map<std::string, seqid_t> sequence_name_map_;
         std::string reference_;
         AlignmentBlockStorage * storage_;
 

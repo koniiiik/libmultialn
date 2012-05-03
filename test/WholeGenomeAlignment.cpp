@@ -4,6 +4,7 @@
 #include <WholeGenomeAlignment.h>
 #include <AlignmentBlockStorage.h>
 #include <BinSearchAlignmentBlockStorage.h>
+#include <MultialnConstants.h>
 
 #include "SequenceGenerator.h"
 #include "BitSequenceFactoryDeclarations.h"
@@ -29,28 +30,32 @@ namespace
                 AlignmentBlock *block;
                 SequenceDetails *seq;
 
-                block = new AlignmentBlock(&al->get_reference());
+                seqid_t reference_id = al->requestSequenceId("reference");
+                seqid_t forward_id = al->requestSequenceId("forwardinf");
+                seqid_t reverse_id = al->requestSequenceId("reverseinf");
+
+                block = new AlignmentBlock();
                 seq = GenerateSequenceDetails(GetParam(), 20, 240, false,
                         "111110000011111");
-                block->addSequence("reference", seq);
+                block->addSequence(reference_id, seq);
                 seq = GenerateSequenceDetails(GetParam(), 10, 150, false,
                         "111111100000111");
-                block->addSequence("forwardinf", seq);
+                block->addSequence(forward_id, seq);
                 seq = GenerateSequenceDetails(GetParam(), 150, 180, true,
                         "000111111111100");
-                block->addSequence("reverseinf", seq);
+                block->addSequence(reverse_id, seq);
                 al->addBlock(block);
 
-                block = new AlignmentBlock(&al->get_reference());
+                block = new AlignmentBlock();
                 seq = GenerateSequenceDetails(GetParam(), 30, 240, false,
                         "111110000011111");
-                block->addSequence("reference", seq);
+                block->addSequence(reference_id, seq);
                 seq = GenerateSequenceDetails(GetParam(), 30, 150, false,
                         "111111100000111");
-                block->addSequence("forwardinf", seq);
+                block->addSequence(forward_id, seq);
                 seq = GenerateSequenceDetails(GetParam(), 50, 180, true,
                         "000111111111100");
-                block->addSequence("reverseinf", seq);
+                block->addSequence(reverse_id, seq);
                 al->addBlock(block);
             }
 
@@ -69,6 +74,11 @@ namespace
                 OutOfSequence);
         EXPECT_THROW(al->mapPositionToInformant(23, "nonexistent"),
                 SequenceDoesNotExist);
+    }
+
+    TEST_P(WholeGenomeAlignmentTest, SequenceIdCount)
+    {
+        EXPECT_EQ(3, al->countKnownSequences());
     }
 
     INSTANTIATE_BITSEQ_TEST_P(WholeGenomeAlignmentTest);

@@ -122,27 +122,32 @@ s mm4.chr6     53310102 13 + 151104725 ACAGCTGAAAATA\n\
 
         EXPECT_EQ(3, storage->size());
 
-        AlignmentBlockStorage::Iterator *it;
-        ASSERT_NO_THROW(it = storage->first());
-        EXPECT_EQ(27578828, (*it)->getReferenceSequence()->get_start());
-        EXPECT_NO_THROW((*it)->getSequence("panTro1.chr6"));
-        EXPECT_NO_THROW((*it)->getSequence("baboon"));
-        EXPECT_NO_THROW((*it)->getSequence("mm4.chr6"));
-        EXPECT_NO_THROW((*it)->getSequence("rn3.chr4"));
+        {
+            AlignmentBlockStorage::Iterator *it;
+            ASSERT_NO_THROW(it = storage->first());
+            EXPECT_EQ(27578828, (*it)->getReferenceSequence()->get_start());
+            EXPECT_NO_THROW((*it)->getSequence(wga.getSequenceId("panTro1.chr6")));
+            EXPECT_NO_THROW((*it)->getSequence(wga.getSequenceId("baboon")));
+            EXPECT_NO_THROW((*it)->getSequence(wga.getSequenceId("mm4.chr6")));
+            EXPECT_NO_THROW((*it)->getSequence(wga.getSequenceId("rn3.chr4")));
 
-        ++(*it);
-        EXPECT_EQ(27699739, (*it)->getReferenceSequence()->get_start());
-        EXPECT_NO_THROW((*it)->getSequence("panTro1.chr6"));
-        EXPECT_NO_THROW((*it)->getSequence("baboon"));
-        EXPECT_NO_THROW((*it)->getSequence("mm4.chr6"));
-        EXPECT_NO_THROW((*it)->getSequence("rn3.chr4"));
+            ++(*it);
+            EXPECT_EQ(27699739, (*it)->getReferenceSequence()->get_start());
+            EXPECT_NO_THROW((*it)->getSequence(wga.getSequenceId("panTro1.chr6")));
+            EXPECT_NO_THROW((*it)->getSequence(wga.getSequenceId("baboon")));
+            EXPECT_NO_THROW((*it)->getSequence(wga.getSequenceId("mm4.chr6")));
+            EXPECT_NO_THROW((*it)->getSequence(wga.getSequenceId("rn3.chr4")));
 
-        ++(*it);
-        EXPECT_EQ(27707221, (*it)->getReferenceSequence()->get_start());
-        EXPECT_NO_THROW((*it)->getSequence("panTro1.chr6"));
-        EXPECT_NO_THROW((*it)->getSequence("baboon"));
-        EXPECT_NO_THROW((*it)->getSequence("mm4.chr6"));
-        EXPECT_THROW((*it)->getSequence("rn3.chr4"), SequenceDoesNotExist);
+            ++(*it);
+            EXPECT_EQ(27707221, (*it)->getReferenceSequence()->get_start());
+            EXPECT_NO_THROW((*it)->getSequence(wga.getSequenceId("panTro1.chr6")));
+            EXPECT_NO_THROW((*it)->getSequence(wga.getSequenceId("baboon")));
+            EXPECT_NO_THROW((*it)->getSequence(wga.getSequenceId("mm4.chr6")));
+            EXPECT_THROW((*it)->getSequence(wga.getSequenceId("rn3.chr4")),
+                    SequenceDoesNotExist);
+
+            delete it;
+        }
 
         EXPECT_EQ(116836, wga.mapPositionToInformant(27578830,
                     "baboon"));
@@ -152,7 +157,7 @@ s mm4.chr6     53310102 13 + 151104725 ACAGCTGAAAATA\n\
         EXPECT_THROW(wga.mapPositionToInformant(27707225, "rn3.chr4"),
                 SequenceDoesNotExist);
 
-        delete it;
+        EXPECT_EQ(5, wga.countKnownSequences());
     }
 
     TEST(MafReaderTest, FailsOnInvalid)

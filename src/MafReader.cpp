@@ -12,6 +12,7 @@
 #include <AlignmentBlock.h>
 #include <SequenceDetails.h>
 #include <BitSequenceFactory.h>
+#include <MultialnConstants.h>
 
 
 namespace maf_reader
@@ -120,7 +121,7 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
             }
             // Skip the line marking the start of a block.
             buf = getNextLine(s);
-            AlignmentBlock *block = new AlignmentBlock(&(wga.get_reference()));
+            AlignmentBlock *block = new AlignmentBlock;
             // This try block is required to finish the last alignment
             // block in the MAF and successfully add it to our WGA.
             try
@@ -135,7 +136,8 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
                     ParsedLine *pline = parseMafLine(buf, factory, limit);
                     if (pline != NULL)
                     {
-                        block->addSequence(pline->first, pline->second);
+                        seqid_t id = wga.requestSequenceId(pline->first);
+                        block->addSequence(id, pline->second);
                         delete pline;
                     }
                     buf = getNextLine(s);

@@ -78,6 +78,9 @@ namespace
                 84, false, 2, "0011");
         EXPECT_TRUE(SequenceDetails::compareById(first, second));
         EXPECT_FALSE(SequenceDetails::compareById(second, first));
+
+        delete first;
+        delete second;
     }
 
 }  // namespace

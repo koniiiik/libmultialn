@@ -8,6 +8,7 @@
 using std::string;
 using std::tuple;
 using std::make_tuple;
+using std::get;
 
 
 WholeGenomeAlignment::WholeGenomeAlignment(const string &reference,
@@ -30,12 +31,19 @@ size_t WholeGenomeAlignment::mapPositionToInformant(size_t position,
     return block->mapPositionToInformant(position, informant_id, boundary);
 }
 
+size_t WholeGenomeAlignment::getSequenceSize(seqid_t sequence) const
+{
+    auto it = this->sequence_details_map_.find(sequence);
+    if (it == this->sequence_details_map_.end())
+    {
+        throw SequenceDoesNotExist();
+    }
+    return get<1>(it->second);
+}
+
 size_t WholeGenomeAlignment::getReferenceSize() const
 {
-    AlignmentBlockStorage::Iterator * it = this->storage_->first();
-    size_t res = (*it)->getReferenceSequence()->get_src_size();
-    delete it;
-    return res;
+    return this->getSequenceSize(kReferenceSequenceId);
 }
 
 seqid_t WholeGenomeAlignment::getSequenceId(const string &name) const
@@ -48,7 +56,8 @@ seqid_t WholeGenomeAlignment::getSequenceId(const string &name) const
     return it->second;
 }
 
-seqid_t WholeGenomeAlignment::requestSequenceId(const string &name)
+seqid_t WholeGenomeAlignment::requestSequenceId(const string &name,
+        size_t size)
 {
     try
     {
@@ -56,7 +65,7 @@ seqid_t WholeGenomeAlignment::requestSequenceId(const string &name)
         // This is needed the first time the reference is requested.
         if (this->sequence_details_map_.count(id) == 0)
         {
-            this->sequence_details_map_[id] = make_tuple(name);
+            this->sequence_details_map_[id] = make_tuple(name, size);
         }
         return id;
     }
@@ -71,7 +80,7 @@ seqid_t WholeGenomeAlignment::requestSequenceId(const string &name)
             throw std::exception();
         }
     }
-    this->sequence_details_map_[new_id] = make_tuple(name);
+    this->sequence_details_map_[new_id] = make_tuple(name, size);
     this->sequence_name_map_[name] = new_id;
     return new_id;
 }

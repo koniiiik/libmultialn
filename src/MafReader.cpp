@@ -74,11 +74,11 @@ SequenceDetails * parseMafLine(const string &line, WholeGenomeAlignment &wga,
 
         cds_static::BitSequence *bitseq = factory.getInstance(bitstr);
 
-        seqid_t id = wga.requestSequenceId(name);
+        seqid_t id = wga.requestSequenceId(name, src_size);
 
         // We have all we need, create and return the instance.
         SequenceDetails *datials = new SequenceDetails(start, reverse,
-                src_size, id, bitseq);
+                id, bitseq);
         return datials;
     }
     catch (std::ios_base::failure &e)

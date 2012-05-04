@@ -34,13 +34,14 @@ namespace
     string test_line = "s hg18.chr7    27578828 38 + 158545518 "
         "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG";
 
-    void VerifyParsedTestLine(SequenceDetails *seq)
+    void VerifyParsedTestLine(SequenceDetails *seq,
+            WholeGenomeAlignment &wga)
     {
         ASSERT_TRUE(NULL != seq);
         EXPECT_EQ(kReferenceSequenceId, seq->get_id());
         EXPECT_EQ(27578828, seq->get_start());
         EXPECT_EQ(38, seq->get_size());
-        EXPECT_EQ(158545518, seq->get_src_size());
+        EXPECT_EQ(158545518, wga.getReferenceSize());
         EXPECT_EQ(0, seq->sequenceToAlignment(27578828));
         EXPECT_EQ(2, seq->sequenceToAlignment(27578830));
         EXPECT_EQ(4, seq->sequenceToAlignment(27578831));
@@ -57,7 +58,7 @@ namespace
         ASSERT_NO_THROW(seq = parseMafLine(test_line, wga, factory, NULL));
         {
             SCOPED_TRACE("");
-            VerifyParsedTestLine(seq);
+            VerifyParsedTestLine(seq, wga);
         }
         delete seq;
 
@@ -70,7 +71,7 @@ namespace
         ASSERT_NO_THROW(seq = parseMafLine(test_line, wga, factory, &limit));
         {
             SCOPED_TRACE("");
-            VerifyParsedTestLine(seq);
+            VerifyParsedTestLine(seq, wga);
         }
         delete seq;
 

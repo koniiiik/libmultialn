@@ -42,6 +42,11 @@ class WholeGenomeAlignment
                 IntervalBoundary boundary=INTERVAL_BEGIN) const;
 
         /*
+        ** Returns the size of the specified sequence. Throws
+        ** SequenceDoesNotExist in case the sequence ID is invalid.
+        */
+        size_t getSequenceSize(seqid_t sequence) const;
+        /*
         ** Returns the size of the reference sequence.
         */
         size_t getReferenceSize() const;
@@ -57,15 +62,19 @@ class WholeGenomeAlignment
         ** sequence already has an ID associated, returns that one,
         ** otherwise returns a new unique one.
         **
+        ** Also sets the size of the sequence in the alignment's global
+        ** sequence information cache.
+        **
         ** TODO: handle the case where all IDs are taken
         */
-        seqid_t requestSequenceId(const std::string &name);
+        seqid_t requestSequenceId(const std::string &name, size_t size);
 
         size_t countKnownSequences() const;
 
 
     private:
-        std::map<seqid_t, std::tuple<std::string> > sequence_details_map_;
+        // This maps sequence IDs to tuples (name, total length).
+        std::map<seqid_t, std::tuple<std::string, size_t> > sequence_details_map_;
         std::map<std::string, seqid_t> sequence_name_map_;
         std::string reference_;
         AlignmentBlockStorage * storage_;

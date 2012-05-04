@@ -26,13 +26,13 @@ namespace
                 // reference:   11111111000000000000001111111111
                 // informant1:  11111100000000001111111100000000
                 // informant2:  00001111111111110000001111111111
-                seq1 = GenerateSequenceDetails(GetParam(), 47, 147, false,
+                seq1 = GenerateSequenceDetails(GetParam(), 47, false,
                         kReferenceSequenceId,
                         "11111111000000000000001111111111");
-                seq2 = GenerateSequenceDetails(GetParam(), 47, 470, false,
-                        2, "11111100000000001111111100000000");
-                seq3 = GenerateSequenceDetails(GetParam(), 47, 747, false,
-                        3, "00001111111111110000001111111111");
+                seq2 = GenerateSequenceDetails(GetParam(), 47, false, 2,
+                        "11111100000000001111111100000000");
+                seq3 = GenerateSequenceDetails(GetParam(), 47, false, 3,
+                        "00001111111111110000001111111111");
             }
 
             virtual void TearDown()
@@ -154,10 +154,10 @@ namespace
     {
         AlignmentBlock *a = new AlignmentBlock();
         AlignmentBlock *b = new AlignmentBlock();
-        SequenceDetails *seq1 = GenerateSequenceDetails(&fact_rg2, 47, 147, false,
-                kReferenceSequenceId, "001011");
-        SequenceDetails *seq2 = GenerateSequenceDetails(&fact_rg2, 74, 470, false,
-                kReferenceSequenceId, "110100");
+        SequenceDetails *seq1 = GenerateSequenceDetails(&fact_rg2, 47,
+                false, kReferenceSequenceId, "001011");
+        SequenceDetails *seq2 = GenerateSequenceDetails(&fact_rg2, 74,
+                false, kReferenceSequenceId, "110100");
 
         a->addSequence(*seq1);
         b->addSequence(*seq2);

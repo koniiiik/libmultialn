@@ -19,8 +19,8 @@ namespace
 
             virtual void SetUp()
             {
-                forward = GenerateSequenceDetails(GetParam(), 47, 84,
-                        false, kReferenceSequenceId,
+                forward = GenerateSequenceDetails(GetParam(), 47, false,
+                        kReferenceSequenceId,
                         "00001111111111110000000011110000");
             }
 
@@ -73,9 +73,9 @@ namespace
     TEST(SequenceDetailsTest, Comparison)
     {
         SequenceDetails *first = GenerateSequenceDetails(&fact_rg2, 47,
-                84, false, 1, "1100");
+                false, 1, "1100");
         SequenceDetails *second = GenerateSequenceDetails(&fact_rg2, 47,
-                84, false, 2, "0011");
+                false, 2, "0011");
         EXPECT_TRUE(SequenceDetails::compareById(*first, *second));
         EXPECT_FALSE(SequenceDetails::compareById(*second, *first));
 

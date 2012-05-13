@@ -1,5 +1,6 @@
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include <WholeGenomeAlignment.h>
 #include <AlignmentBlock.h>
@@ -9,11 +10,12 @@ using std::string;
 using std::tuple;
 using std::make_tuple;
 using std::get;
+using std::vector;
 
 
 WholeGenomeAlignment::WholeGenomeAlignment(const string &reference,
         AlignmentBlockStorage *storage):
-    storage_(storage)
+    reference_(reference), storage_(storage)
 {
     this->sequence_name_map_[reference] = kReferenceSequenceId;
 }
@@ -89,4 +91,20 @@ seqid_t WholeGenomeAlignment::requestSequenceId(const string &name,
 size_t WholeGenomeAlignment::countKnownSequences() const
 {
     return this->sequence_name_map_.size();
+}
+
+vector<string> * WholeGenomeAlignment::getSequenceList() const
+{
+    vector<string> *res = new vector<string>;
+    res->push_back(this->get_reference());
+    for (auto it = this->sequence_details_map_.begin();
+            it != this->sequence_details_map_.end();
+            ++it)
+    {
+        if (it->first != kReferenceSequenceId)
+        {
+            res->push_back(get<0>(it->second));
+        }
+    }
+    return res;
 }

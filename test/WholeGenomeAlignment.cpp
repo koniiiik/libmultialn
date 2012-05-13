@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <string>
+#include <vector>
 
 #include <WholeGenomeAlignment.h>
 #include <AlignmentBlockStorage.h>
@@ -11,6 +12,7 @@
 
 
 using std::string;
+using std::vector;
 
 namespace
 {
@@ -88,15 +90,29 @@ namespace
         EXPECT_NO_THROW(al->getSequenceId("reference"));
         EXPECT_EQ(kReferenceSequenceId,
                 al->requestSequenceId("reference", 240));
+        EXPECT_EQ(3, al->countKnownSequences());
 
         EXPECT_THROW(al->getSequenceId("extra"), SequenceDoesNotExist);
+        EXPECT_EQ(3, al->countKnownSequences());
         seqid_t id;
         EXPECT_NO_THROW(id = al->requestSequenceId("extra", 740));
         EXPECT_NO_THROW(al->getSequenceId("extra"));
+        EXPECT_EQ(4, al->countKnownSequences());
         EXPECT_EQ(id, al->getSequenceId("extra"));
         EXPECT_EQ(id, al->requestSequenceId("extra", 740));
         EXPECT_EQ(kReferenceSequenceId,
                 al->requestSequenceId("reference", 240));
+        EXPECT_EQ(4, al->countKnownSequences());
+
+        vector<string> *seqlist;
+        EXPECT_NO_THROW(seqlist = al->getSequenceList());
+        vector<string> expected(4);
+        expected[0] = "reference";
+        expected[1] = "forwardinf";
+        expected[2] = "reverseinf";
+        expected[3] = "extra";
+        EXPECT_EQ(expected, *seqlist);
+        delete seqlist;
     }
 
     INSTANTIATE_BITSEQ_TEST_P(WholeGenomeAlignmentTest);

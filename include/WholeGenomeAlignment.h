@@ -3,6 +3,7 @@
 
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include <AlignmentBlock.h>
 #include <SequenceDetails.h>
@@ -70,6 +71,14 @@ class WholeGenomeAlignment
         seqid_t requestSequenceId(const std::string &name, size_t size);
 
         size_t countKnownSequences() const;
+
+        /*
+        ** Returns a vector containing the names of all sequences
+        ** contained within this alignment. The first one is reference,
+        ** others are in the order in which they have been registered with
+        ** requestSequenceId.
+        */
+        std::vector<std::string> * getSequenceList() const;
 
 
     private:

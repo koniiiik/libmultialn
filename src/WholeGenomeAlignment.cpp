@@ -72,6 +72,7 @@ seqid_t WholeGenomeAlignment::requestSequenceId(const string &name,
     catch (SequenceDoesNotExist &e)
     { }
     seqid_t new_id = 1;
+    // TODO: unphpize this
     while (this->sequence_details_map_.count(new_id) > 0)
     {
         ++new_id;

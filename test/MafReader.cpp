@@ -42,13 +42,15 @@ namespace
         EXPECT_EQ(27578828, seq->get_start());
         EXPECT_EQ(38, seq->get_size());
         EXPECT_EQ(158545518, wga.getReferenceSize());
-        EXPECT_EQ(0, seq->sequenceToAlignment(27578828));
-        EXPECT_EQ(2, seq->sequenceToAlignment(27578830));
-        EXPECT_EQ(4, seq->sequenceToAlignment(27578831));
-        EXPECT_EQ(26, seq->sequenceToAlignment(27578850));
-        EXPECT_EQ(41, seq->sequenceToAlignment(27578865));
-        EXPECT_THROW(seq->sequenceToAlignment(27578827), OutOfSequence);
-        EXPECT_THROW(seq->sequenceToAlignment(27578866), OutOfSequence);
+        EXPECT_EQ(0, seq->sequenceToAlignment(27578828, 158545518));
+        EXPECT_EQ(2, seq->sequenceToAlignment(27578830, 158545518));
+        EXPECT_EQ(4, seq->sequenceToAlignment(27578831, 158545518));
+        EXPECT_EQ(26, seq->sequenceToAlignment(27578850, 158545518));
+        EXPECT_EQ(41, seq->sequenceToAlignment(27578865, 158545518));
+        EXPECT_THROW(seq->sequenceToAlignment(27578827, 158545518),
+                OutOfSequence);
+        EXPECT_THROW(seq->sequenceToAlignment(27578866, 158545518),
+                OutOfSequence);
     }
 
     TEST(MafReaderTest, LineParser)

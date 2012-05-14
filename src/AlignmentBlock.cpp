@@ -10,6 +10,7 @@
 #include <AlignmentBlock.h>
 #include <SequenceDetails.h>
 #include <MultialnConstants.h>
+#include <WholeGenomeAlignment.h>
 
 
 using std::sort;
@@ -18,9 +19,11 @@ size_t AlignmentBlock::mapPositionToInformant(const size_t pos,
         seqid_t informant, const IntervalBoundary boundary)
 {
     const SequenceDetails *ref = this->getReferenceSequence();
-    size_t alignment_pos = ref->sequenceToAlignment(pos);
+    size_t source_size = this->wga_->getReferenceSize();
+    size_t alignment_pos = ref->sequenceToAlignment(pos, source_size);
+    source_size = this->wga_->getSequenceSize(informant);
     const SequenceDetails *inf = this->getSequence(informant);
-    return inf->alignmentToSequence(alignment_pos, boundary);
+    return inf->alignmentToSequence(alignment_pos, source_size, boundary);
 }
 
 const AlignmentBlock::PositionMapping * AlignmentBlock::mapPositionToAll(

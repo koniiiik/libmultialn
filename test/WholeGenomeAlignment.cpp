@@ -36,7 +36,7 @@ namespace
                 seqid_t forward_id = al->requestSequenceId("forwardinf", 150);
                 seqid_t reverse_id = al->requestSequenceId("reverseinf", 180);
 
-                block = new AlignmentBlock();
+                block = new AlignmentBlock(al);
                 seq = GenerateSequenceDetails(GetParam(), 20, false,
                         reference_id, "111110000011111");
                 block->addSequence(*seq);
@@ -51,7 +51,7 @@ namespace
                 delete seq;
                 al->addBlock(block);
 
-                block = new AlignmentBlock();
+                block = new AlignmentBlock(al);
                 seq = GenerateSequenceDetails(GetParam(), 30, false,
                         reference_id, "111110000011111");
                 block->addSequence(*seq);

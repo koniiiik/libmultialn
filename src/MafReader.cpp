@@ -121,7 +121,7 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
             }
             // Skip the line marking the start of a block.
             buf = getNextLine(s);
-            AlignmentBlock *block = new AlignmentBlock;
+            AlignmentBlock *block = new AlignmentBlock(&wga);
             // This try block is required to finish the last alignment
             // block in the MAF and successfully add it to our WGA.
             try

@@ -30,8 +30,11 @@ class SequenceDetails
         ** Given a position on the whole sequence returns the position in
         ** this alignment. Throws OutOfSequence if the position is not
         ** within this sequence boundaries.
+        **
+        ** This method requires the source_size parameter to calculate the
+        ** coordinates for reverse strands.
         */
-        size_t sequenceToAlignment(size_t index) const;
+        size_t sequenceToAlignment(size_t index, size_t source_size) const;
 
         /*
         ** Given a position in this alignment finds the appropriate
@@ -39,13 +42,17 @@ class SequenceDetails
         ** searching for the beginning or the end of an interval, we
         ** find the first filled position in this alignment to the right
         ** or to the left respectively.
+        **
+        ** This method requires the source_size parameter to calculate the
+        ** coordinates for reverse strands.
         */
-        size_t alignmentToSequence(size_t index,
+        size_t alignmentToSequence(size_t index, size_t source_size,
                 IntervalBoundary boundary=INTERVAL_BEGIN) const;
 
         size_t rank(size_t index) const;
         size_t select(size_t index) const;
 
+        // TODO: this does not work for reverse strands.
         size_t get_start() const
         {
             return this->start_;

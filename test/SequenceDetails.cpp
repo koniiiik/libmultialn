@@ -15,11 +15,14 @@ namespace
     {
         protected:
 
-            SequenceDetails *forward;
+            SequenceDetails *forward, *backward;
 
             virtual void SetUp()
             {
                 forward = GenerateSequenceDetails(GetParam(), 47, false,
+                        kReferenceSequenceId,
+                        "00001111111111110000000011110000");
+                backward = GenerateSequenceDetails(GetParam(), 16, true,
                         kReferenceSequenceId,
                         "00001111111111110000000011110000");
             }
@@ -27,6 +30,7 @@ namespace
             virtual void TearDown()
             {
                 delete forward;
+                delete backward;
             }
     };
 
@@ -35,36 +39,54 @@ namespace
     {
         // The sequence is zero-based, sequence offset is taken into
         // account.
-        EXPECT_EQ(4, forward->sequenceToAlignment(47));
-        EXPECT_EQ(24, forward->sequenceToAlignment(59));
+        EXPECT_EQ(4, forward->sequenceToAlignment(47, 470));
+        EXPECT_EQ(24, forward->sequenceToAlignment(59, 470));
 
         // If we're asking for a position in this alignment containing a
         // 1, we should get the exact position match.
-        EXPECT_EQ(48, forward->alignmentToSequence(5, INTERVAL_BEGIN));
-        EXPECT_EQ(48, forward->alignmentToSequence(5, INTERVAL_END));
+        EXPECT_EQ(48, forward->alignmentToSequence(5, 470, INTERVAL_BEGIN));
+        EXPECT_EQ(48, forward->alignmentToSequence(5, 470, INTERVAL_END));
 
         // Otherwise the match should be the first position to the left or
         // to the right.
-        EXPECT_EQ(59, forward->alignmentToSequence(19, INTERVAL_BEGIN));
-        EXPECT_EQ(58, forward->alignmentToSequence(19, INTERVAL_END));
+        EXPECT_EQ(59, forward->alignmentToSequence(19, 470, INTERVAL_BEGIN));
+        EXPECT_EQ(58, forward->alignmentToSequence(19, 470, INTERVAL_END));
+    }
+
+    TEST_P(SequenceDetailsTest, BackwardLookup)
+    {
+        size_t source_size = 64;
+        EXPECT_EQ(27, backward->sequenceToAlignment(32, source_size));
+        EXPECT_EQ(4, backward->sequenceToAlignment(47, source_size));
+
+        EXPECT_EQ(42, backward->alignmentToSequence(9, source_size));
+        EXPECT_EQ(35, backward->alignmentToSequence(18, source_size,
+                    INTERVAL_BEGIN));
+        EXPECT_EQ(36, backward->alignmentToSequence(18, source_size,
+                    INTERVAL_END));
     }
 
     TEST_P(SequenceDetailsTest, ExceptionHandling)
     {
-        EXPECT_THROW(forward->sequenceToAlignment(42), OutOfSequence);
-        EXPECT_THROW(forward->sequenceToAlignment(74), OutOfSequence);
-        EXPECT_THROW(forward->sequenceToAlignment(64), OutOfSequence);
-        EXPECT_THROW(forward->sequenceToAlignment(63), OutOfSequence);
-        EXPECT_NO_THROW(forward->sequenceToAlignment(56));
+        EXPECT_THROW(forward->sequenceToAlignment(42, 470), OutOfSequence);
+        EXPECT_THROW(forward->sequenceToAlignment(74, 470), OutOfSequence);
+        EXPECT_THROW(forward->sequenceToAlignment(64, 470), OutOfSequence);
+        EXPECT_THROW(forward->sequenceToAlignment(63, 470), OutOfSequence);
+        EXPECT_NO_THROW(forward->sequenceToAlignment(56, 470));
 
-        EXPECT_THROW(forward->alignmentToSequence(-1), OutOfSequence);
-        EXPECT_THROW(forward->alignmentToSequence(35), OutOfSequence);
-        EXPECT_NO_THROW(forward->alignmentToSequence(3, INTERVAL_BEGIN));
-        EXPECT_NO_THROW(forward->alignmentToSequence(30, INTERVAL_END));
+        EXPECT_THROW(forward->alignmentToSequence(-1, 470), OutOfSequence);
+        EXPECT_THROW(forward->alignmentToSequence(35, 470), OutOfSequence);
+        EXPECT_NO_THROW(forward->alignmentToSequence(3, 470, INTERVAL_BEGIN));
+        EXPECT_NO_THROW(forward->alignmentToSequence(30, 470, INTERVAL_END));
 
-        EXPECT_THROW(forward->alignmentToSequence(3, INTERVAL_END),
+        EXPECT_THROW(forward->alignmentToSequence(3, 470, INTERVAL_END),
                 OutOfSequence);
-        EXPECT_THROW(forward->alignmentToSequence(30, INTERVAL_BEGIN),
+        EXPECT_THROW(forward->alignmentToSequence(30, 470, INTERVAL_BEGIN),
+                OutOfSequence);
+
+        EXPECT_THROW(backward->sequenceToAlignment(31, 64),
+                OutOfSequence);
+        EXPECT_THROW(backward->sequenceToAlignment(48, 64),
                 OutOfSequence);
     }
 

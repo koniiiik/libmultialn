@@ -35,9 +35,9 @@ namespace
 
                 AlignmentBlock *block1, *block2, *block3;
 
-                block1 = new AlignmentBlock();
-                block2 = new AlignmentBlock();
-                block3 = new AlignmentBlock();
+                block1 = new AlignmentBlock(NULL);
+                block2 = new AlignmentBlock(NULL);
+                block3 = new AlignmentBlock(NULL);
 
                 block1->addSequence(*seq1);
                 block2->addSequence(*seq2);

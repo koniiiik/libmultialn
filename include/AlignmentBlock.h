@@ -22,7 +22,7 @@ class SequenceDoesNotExist: public std::exception
 class AlignmentBlock
 {
     public:
-        typedef std::map<seqid_t, size_t> Mapping;
+        typedef std::map<seqid_t, size_t> PositionMapping;
 
         AlignmentBlock():
             prepared_(false)
@@ -47,7 +47,7 @@ class AlignmentBlock
         ** Throws OutOfSequence in case the position is not present in the
         ** reference sequence.
         */
-        const Mapping * mapPositionToAll(const size_t pos,
+        const PositionMapping * mapPositionToAll(const size_t pos,
                 const IntervalBoundary boundary=INTERVAL_BEGIN);
 
         /*

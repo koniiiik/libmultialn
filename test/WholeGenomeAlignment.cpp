@@ -84,6 +84,18 @@ namespace
                 SequenceDoesNotExist);
     }
 
+    TEST_P(WholeGenomeAlignmentTest, MultiSinglePositions)
+    {
+        EXPECT_THROW(al->mapPositionToAll(5), OutOfSequence);
+        WholeGenomeAlignment::PositionMapping * mapping;
+        EXPECT_NO_THROW(mapping = al->mapPositionToAll(23));
+        ASSERT_TRUE(mapping != NULL);
+        EXPECT_EQ(2, mapping->size());
+        EXPECT_TRUE(mapping->find("forwardinf") != mapping->end());
+        EXPECT_EQ(13, (*mapping)["forwardinf"]);
+        delete mapping;
+    }
+
     TEST_P(WholeGenomeAlignmentTest, SequenceId)
     {
         EXPECT_EQ(3, al->countKnownSequences());
@@ -103,6 +115,9 @@ namespace
         EXPECT_EQ(kReferenceSequenceId,
                 al->requestSequenceId("reference", 240));
         EXPECT_EQ(4, al->countKnownSequences());
+
+        EXPECT_EQ("extra", al->getSequenceName(id));
+        EXPECT_EQ("reference", al->getSequenceName(kReferenceSequenceId));
 
         vector<string> *seqlist;
         EXPECT_NO_THROW(seqlist = al->getSequenceList());

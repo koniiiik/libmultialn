@@ -4,6 +4,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <map>
 
 #include <AlignmentBlock.h>
 #include <SequenceDetails.h>
@@ -14,6 +15,8 @@
 class WholeGenomeAlignment
 {
     public:
+        typedef std::map<std::string, size_t> PositionMapping;
+
         WholeGenomeAlignment(const std::string &reference,
                 AlignmentBlockStorage * storage);
         ~WholeGenomeAlignment();
@@ -43,6 +46,16 @@ class WholeGenomeAlignment
                 IntervalBoundary boundary=INTERVAL_BEGIN) const;
 
         /*
+        ** Takes a position in the reference sequence and maps it to all
+        ** informants possible.
+        **
+        ** Throws OutOfSequence in case the position is not covered by the
+        ** alignment.
+        */
+        PositionMapping * mapPositionToAll(size_t position,
+                IntervalBoundary boundary=INTERVAL_BEGIN) const;
+
+        /*
         ** Returns the size of the specified sequence. Throws
         ** SequenceDoesNotExist in case the sequence ID is invalid.
         */
@@ -69,6 +82,14 @@ class WholeGenomeAlignment
         ** TODO: handle the case where all IDs are taken
         */
         seqid_t requestSequenceId(const std::string &name, size_t size);
+
+        /*
+        ** Given a sequence ID, returns a reference to a string containing
+        ** its name.
+        **
+        ** Throws SequenceDoesNotExist in case the ID is unknown.
+        */
+        const std::string & getSequenceName(seqid_t id) const;
 
         size_t countKnownSequences() const;
 

@@ -23,10 +23,10 @@ size_t AlignmentBlock::mapPositionToInformant(const size_t pos,
     return inf->alignmentToSequence(alignment_pos, boundary);
 }
 
-const AlignmentBlock::Mapping * AlignmentBlock::mapPositionToAll(const size_t pos,
-        const IntervalBoundary boundary)
+const AlignmentBlock::PositionMapping * AlignmentBlock::mapPositionToAll(
+        const size_t pos, const IntervalBoundary boundary)
 {
-    Mapping * mapping = new Mapping;
+    PositionMapping * mapping = new PositionMapping;
     for (Container::const_iterator it = this->sequences_.begin();
             it != this->sequences_.end(); ++it)
     {

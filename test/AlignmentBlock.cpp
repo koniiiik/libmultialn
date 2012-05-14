@@ -103,7 +103,7 @@ namespace
 
         // The result of mapPositionToAll should be a map containing only
         // informant1.
-        const AlignmentBlock::Mapping *m;
+        const AlignmentBlock::PositionMapping *m;
         ASSERT_NO_THROW(m = block->mapPositionToAll(48));
         EXPECT_EQ(1, m->size());
         EXPECT_EQ(1, m->count(2));

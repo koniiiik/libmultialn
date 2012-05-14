@@ -28,9 +28,25 @@ WholeGenomeAlignment::~WholeGenomeAlignment()
 size_t WholeGenomeAlignment::mapPositionToInformant(size_t position,
         const string &informant, IntervalBoundary boundary) const
 {
-    AlignmentBlock * block = this->storage_->getBlock(position);
+    AlignmentBlock *block = this->storage_->getBlock(position);
     seqid_t informant_id = this->getSequenceId(informant);
     return block->mapPositionToInformant(position, informant_id, boundary);
+}
+
+WholeGenomeAlignment::PositionMapping *
+WholeGenomeAlignment::mapPositionToAll(size_t position,
+        IntervalBoundary boundary) const
+{
+    AlignmentBlock *block = this->storage_->getBlock(position);
+    const AlignmentBlock::PositionMapping *block_mapping =
+        block->mapPositionToAll(position, boundary);
+    PositionMapping *mapping = new PositionMapping();
+    for (auto it = block_mapping->begin(); it != block_mapping->end(); ++it)
+    {
+        (*mapping)[this->getSequenceName(it->first)] = it->second;
+    }
+    delete block_mapping;
+    return mapping;
 }
 
 size_t WholeGenomeAlignment::getSequenceSize(seqid_t sequence) const
@@ -86,6 +102,16 @@ seqid_t WholeGenomeAlignment::requestSequenceId(const string &name,
     this->sequence_details_map_[new_id] = make_tuple(name, size);
     this->sequence_name_map_[name] = new_id;
     return new_id;
+}
+
+const string & WholeGenomeAlignment::getSequenceName(seqid_t id) const
+{
+    auto iter = this->sequence_details_map_.find(id);
+    if (iter == this->sequence_details_map_.end())
+    {
+        throw SequenceDoesNotExist();
+    }
+    return get<0>(iter->second);
 }
 
 size_t WholeGenomeAlignment::countKnownSequences() const

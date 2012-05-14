@@ -15,6 +15,7 @@ using std::vector;
 using std::clock;
 using std::max;
 using std::min;
+using std::pair;
 
 string progname;
 
@@ -76,46 +77,57 @@ int main(int argc, char **argv)
     cerr << "Parsed MAF in " << clock_to_sec(end - start) <<
             " seconds." << endl;
 
-    vector<string> *seqnames = wga.getSequenceList();
     size_t reference_size = wga.getReferenceSize();
-    size_t tries_per_sequence = 0;
-    size_t reference_misses = 0;
-    double total_time = 0;
+    size_t requested_attempts = (int)(reference_size * percentage / 100.0);
 
-    double step = 100 / (double)percentage;
+    // We need to prepae a list of (informant, position) pairs that are
+    // guaranteed not to miss to be able to measure the performance of
+    // actual hits.
+    // We select the requested number of pairs by trying random positions.
+    vector<pair<string, size_t> > safe_maps;
+    safe_maps.reserve(requested_attempts + 47);
 
-    for (size_t seq_no = 1; seq_no < seqnames->size(); ++seq_no)
+    size_t misses = 0;
+    while (safe_maps.size() < requested_attempts)
     {
-        start = clock();
-        size_t misses = 0, reference_misses_loc = 0, try_no = 0;
-        for (; (size_t)(try_no * step) < reference_size; ++try_no)
+        size_t position = rand() % reference_size;
+        try
         {
-            size_t position = (size_t)(try_no * step);
-            try
+            WholeGenomeAlignment::PositionMapping *mapping;
+            mapping = wga.mapPositionToAll(position);
+            if (mapping->begin() == mapping->end())
             {
-                wga.mapPositionToInformant(position, seqnames->at(seq_no));
+                delete mapping;
+                throw OutOfSequence();
             }
-            catch (OutOfSequence &e)
-            {
-                ++reference_misses_loc;
-            }
-            catch (SequenceDoesNotExist &e)
-            {
-                ++misses;
-            }
+            safe_maps.push_back(make_pair(mapping->begin()->first,
+                        position));
+            delete mapping;
         }
-        end = clock();
-        double sequence_time = clock_to_sec(end - start);
-        cerr << seqnames->at(seq_no) << "\t" << misses << "\t" <<
-                sequence_time << endl;
-        total_time += sequence_time;
-        reference_misses = reference_misses_loc;
-        tries_per_sequence = try_no;
+        catch (OutOfSequence &e)
+        {
+            ++misses;
+        }
     }
+    cerr << "Gathered " << requested_attempts << "; missed " << misses << endl;
 
-    cerr << "Total time:\t" << total_time << endl;
-    cerr << "Tries per seq:\t" << tries_per_sequence << endl;
-    cerr << "Average time per try:\t" << total_time / (tries_per_sequence
-            * (seqnames->size() - 1)) << endl;
-    cerr << "Reference misses:\t" << reference_misses << endl;
+    start = clock();
+    for (size_t attempt = 0; attempt < safe_maps.size(); ++attempt)
+    {
+        try
+        {
+            wga.mapPositionToInformant(safe_maps[attempt].second,
+                    safe_maps[attempt].first);
+        }
+        catch (OutOfSequence &e)
+        {
+            cout << "OutOfSequence called on attempt " << attempt << endl;
+        }
+    }
+    end = clock();
+
+    double seconds = clock_to_sec(end - start);
+    cerr << "Attempts:\t" << requested_attempts << endl;
+    cerr << "Total secs:\t" << seconds << endl;
+    cerr << "Secs per attempt:\t" << seconds / requested_attempts << endl;
 }

@@ -27,6 +27,10 @@ const AlignmentBlock::PositionMapping * AlignmentBlock::mapPositionToAll(
         const size_t pos, const IntervalBoundary boundary)
 {
     PositionMapping * mapping = new PositionMapping;
+    // We need to call this here, before we create an iterator, because
+    // prepare() creates a new sequences_ vector which invalidates its
+    // iterators.
+    this->prepare();
     for (Container::const_iterator it = this->sequences_.begin();
             it != this->sequences_.end(); ++it)
     {
@@ -86,5 +90,7 @@ void AlignmentBlock::prepare()
 
     sort(this->sequences_.begin(), this->sequences_.end(),
             SequenceDetails::compareById);
+    // Shrink the vector to its minimal required size.
+    vector<SequenceDetails>(this->sequences_).swap(this->sequences_);
     this->prepared_ = true;
 }

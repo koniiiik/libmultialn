@@ -1,5 +1,6 @@
 #include <string>
 #include <set>
+#include <vector>
 #include <fstream>
 #include <istream>
 #include <sstream>
@@ -21,6 +22,7 @@ namespace maf_reader
 using std::istream;
 using std::string;
 using std::set;
+using std::vector;
 
 string getNextLine(istream &s)
 {
@@ -87,6 +89,32 @@ SequenceDetails * parseMafLine(const string &line, WholeGenomeAlignment &wga,
     }
 }
 
+AlignmentBlock * ParseMafBlock(const vector<string> &block_lines,
+        WholeGenomeAlignment &wga, BitSequenceFactory &factory,
+        const set<string> *limit)
+{
+    AlignmentBlock *block = new AlignmentBlock();
+    try
+    {
+        for (auto it = block_lines.begin(); it != block_lines.end(); ++it)
+        {
+            SequenceDetails *details = parseMafLine(*it, wga,
+                    factory, limit);
+            if (details != NULL)
+            {
+                block->addSequence(*details);
+                delete details;
+            }
+        }
+    }
+    catch (ParseError &e)
+    {
+        delete block;
+        throw;
+    }
+    return block;
+}
+
 void ReadMafFile(const string &file_name, WholeGenomeAlignment &wga,
         BitSequenceFactory &factory, const set<string> *limit)
 {
@@ -100,9 +128,11 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
     s.exceptions(istream::failbit | istream::badbit);
     try
     {
+        bool can_continue = true;
         // For each block...
-        while (1)
+        while (can_continue)
         {
+            vector<string> block_lines;
             string buf = getNextLine(s);
             // Skip the first empty line preceding all blocks.
             if (buf.empty())
@@ -121,7 +151,6 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
             }
             // Skip the line marking the start of a block.
             buf = getNextLine(s);
-            AlignmentBlock *block = new AlignmentBlock;
             // This try block is required to finish the last alignment
             // block in the MAF and successfully add it to our WGA.
             try
@@ -133,27 +162,15 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
                     {
                         throw ParseError();
                     }
-                    SequenceDetails *details = parseMafLine(buf, wga,
-                            factory, limit);
-                    if (details != NULL)
-                    {
-                        block->addSequence(*details);
-                        delete details;
-                    }
+                    block_lines.push_back(buf);
                     buf = getNextLine(s);
                 }
             }
             catch (std::ios_base::failure &e)
             {
-                wga.addBlock(block);
-                return;
+                can_continue = false;
             }
-            catch (ParseError &e)
-            {
-                delete block;
-                throw;
-            }
-            wga.addBlock(block);
+            wga.addBlock(ParseMafBlock(block_lines, wga, factory, limit));
         }
     }
     catch (std::ios_base::failure &e)

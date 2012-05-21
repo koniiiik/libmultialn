@@ -36,31 +36,31 @@ namespace
                 seqid_t forward_id = al->requestSequenceId("forwardinf", 150);
                 seqid_t reverse_id = al->requestSequenceId("reverseinf", 180);
 
-                block = new AlignmentBlock(al);
-                seq = GenerateSequenceDetails(GetParam(), 20, false,
+                block = new AlignmentBlock();
+                seq = GenerateSequenceDetails(GetParam(), 20, 240, false,
                         reference_id, "111110000011111");
                 block->addSequence(*seq);
                 delete seq;
-                seq = GenerateSequenceDetails(GetParam(), 10, false,
+                seq = GenerateSequenceDetails(GetParam(), 10, 150, false,
                         forward_id, "111111100000111");
                 block->addSequence(*seq);
                 delete seq;
-                seq = GenerateSequenceDetails(GetParam(), 150, true,
+                seq = GenerateSequenceDetails(GetParam(), 150, 180, true,
                         reverse_id, "000111111111100");
                 block->addSequence(*seq);
                 delete seq;
                 al->addBlock(block);
 
-                block = new AlignmentBlock(al);
-                seq = GenerateSequenceDetails(GetParam(), 30, false,
+                block = new AlignmentBlock();
+                seq = GenerateSequenceDetails(GetParam(), 30, 240, false,
                         reference_id, "111110000011111");
                 block->addSequence(*seq);
                 delete seq;
-                seq = GenerateSequenceDetails(GetParam(), 30, false,
+                seq = GenerateSequenceDetails(GetParam(), 30, 150, false,
                         forward_id, "111111100000111");
                 block->addSequence(*seq);
                 delete seq;
-                seq = GenerateSequenceDetails(GetParam(), 50, true,
+                seq = GenerateSequenceDetails(GetParam(), 50, 180, true,
                         reverse_id, "000111111111100");
                 block->addSequence(*seq);
                 delete seq;

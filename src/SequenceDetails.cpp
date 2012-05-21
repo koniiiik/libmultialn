@@ -4,14 +4,13 @@
 #include <MultialnConstants.h>
 
 
-size_t SequenceDetails::sequenceToAlignment(size_t index,
-        size_t source_size) const
+size_t SequenceDetails::sequenceToAlignment(size_t index) const
 {
     // If the range is taken from the reverse strand, convert the
-    // coordinate to this strand's system.
+    // coordinate to the forward strand's system.
     if (this->reverse_)
     {
-        index = source_size - index - 1;
+        index = this->get_src_size() - index - 1;
     }
     if (index < this->start_ || index >= (this->start_ + this->get_size()))
     {
@@ -21,7 +20,7 @@ size_t SequenceDetails::sequenceToAlignment(size_t index,
 }
 
 size_t SequenceDetails::alignmentToSequence(size_t index,
-        size_t source_size, IntervalBoundary boundary) const
+        IntervalBoundary boundary) const
 {
     if (index >= this->sequence_->getLength())
     {
@@ -46,7 +45,7 @@ size_t SequenceDetails::alignmentToSequence(size_t index,
     // strand. Normalize to the forward strand.
     if (this->reverse_)
     {
-        position = source_size - position - 1;
+        position = this->get_src_size() - position - 1;
     }
     return position;
 }

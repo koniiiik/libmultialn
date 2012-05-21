@@ -26,18 +26,18 @@ namespace
                 storage = new BinSearchAlignmentBlockStorage;
 
                 SequenceDetails *seq1, *seq2, *seq3;
-                seq1 = GenerateSequenceDetails(&fact_rg2, 12, false,
+                seq1 = GenerateSequenceDetails(&fact_rg2, 12, 470, false,
                         kReferenceSequenceId, "001011");
-                seq2 = GenerateSequenceDetails(&fact_rg2, 15, false,
+                seq2 = GenerateSequenceDetails(&fact_rg2, 15, 470, false,
                         kReferenceSequenceId, "1111111111");
-                seq3 = GenerateSequenceDetails(&fact_rg2, 30, false,
+                seq3 = GenerateSequenceDetails(&fact_rg2, 30, 470, false,
                         kReferenceSequenceId, "11111");
 
                 AlignmentBlock *block1, *block2, *block3;
 
-                block1 = new AlignmentBlock(NULL);
-                block2 = new AlignmentBlock(NULL);
-                block3 = new AlignmentBlock(NULL);
+                block1 = new AlignmentBlock();
+                block2 = new AlignmentBlock();
+                block3 = new AlignmentBlock();
 
                 block1->addSequence(*seq1);
                 block2->addSequence(*seq2);

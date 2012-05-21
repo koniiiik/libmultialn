@@ -10,9 +10,6 @@
 #include <MultialnConstants.h>
 
 
-// forward declaration
-class WholeGenomeAlignment;
-
 class SequenceDoesNotExist: public std::exception
 {
     public:
@@ -27,8 +24,8 @@ class AlignmentBlock
     public:
         typedef std::map<seqid_t, size_t> PositionMapping;
 
-        AlignmentBlock(WholeGenomeAlignment *wga):
-            prepared_(false), wga_(wga)
+        AlignmentBlock():
+            prepared_(false)
         { }
 
         /*
@@ -85,7 +82,6 @@ class AlignmentBlock
         typedef std::vector<SequenceDetails> Container;
         Container sequences_;
         bool prepared_;
-        WholeGenomeAlignment *wga_;
 
         void prepare();
 

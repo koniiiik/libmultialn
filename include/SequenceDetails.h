@@ -21,20 +21,18 @@ class OutOfSequence: public std::exception
 class SequenceDetails
 {
     public:
-        SequenceDetails(size_t start, bool reverse, seqid_t id,
-                cds_static::BitSequence *sequence):
-            start_(start), reverse_(reverse), id_(id), sequence_(sequence)
+        SequenceDetails(size_t start, bool reverse, size_t src_size,
+                        seqid_t id, cds_static::BitSequence *sequence):
+            start_(start), src_size_(src_size), reverse_(reverse),
+            id_(id), sequence_(sequence)
         { }
 
         /*
         ** Given a position on the whole sequence returns the position in
         ** this alignment. Throws OutOfSequence if the position is not
         ** within this sequence boundaries.
-        **
-        ** This method requires the source_size parameter to calculate the
-        ** coordinates for reverse strands.
         */
-        size_t sequenceToAlignment(size_t index, size_t source_size) const;
+        size_t sequenceToAlignment(size_t index) const;
 
         /*
         ** Given a position in this alignment finds the appropriate
@@ -42,17 +40,13 @@ class SequenceDetails
         ** searching for the beginning or the end of an interval, we
         ** find the first filled position in this alignment to the right
         ** or to the left respectively.
-        **
-        ** This method requires the source_size parameter to calculate the
-        ** coordinates for reverse strands.
         */
-        size_t alignmentToSequence(size_t index, size_t source_size,
+        size_t alignmentToSequence(size_t index,
                 IntervalBoundary boundary=INTERVAL_BEGIN) const;
 
         size_t rank(size_t index) const;
         size_t select(size_t index) const;
 
-        // TODO: this does not work for reverse strands.
         size_t get_start() const
         {
             return this->start_;
@@ -60,6 +54,10 @@ class SequenceDetails
         size_t get_size() const
         {
             return this->sequence_->countOnes();
+        }
+        size_t get_src_size() const
+        {
+            return this->src_size_;
         }
         seqid_t get_id() const
         {
@@ -74,8 +72,9 @@ class SequenceDetails
 
 
     private:
-        // position in the source sequence
-        size_t start_;
+        // position in the source sequence and the size of the original
+        // sequence
+        size_t start_, src_size_;
         // true if from reverse-complement source
         bool reverse_;
         seqid_t id_;

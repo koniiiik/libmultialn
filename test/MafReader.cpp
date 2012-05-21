@@ -35,55 +35,61 @@ namespace
         "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG";
 
     void VerifyParsedTestLine(SequenceDetails *seq,
-            WholeGenomeAlignment &wga)
+            WholeGenomeAlignment *wga)
     {
         ASSERT_TRUE(NULL != seq);
         EXPECT_EQ(kReferenceSequenceId, seq->get_id());
         EXPECT_EQ(27578828, seq->get_start());
         EXPECT_EQ(38, seq->get_size());
-        EXPECT_EQ(158545518, wga.getReferenceSize());
-        EXPECT_EQ(0, seq->sequenceToAlignment(27578828, 158545518));
-        EXPECT_EQ(2, seq->sequenceToAlignment(27578830, 158545518));
-        EXPECT_EQ(4, seq->sequenceToAlignment(27578831, 158545518));
-        EXPECT_EQ(26, seq->sequenceToAlignment(27578850, 158545518));
-        EXPECT_EQ(41, seq->sequenceToAlignment(27578865, 158545518));
-        EXPECT_THROW(seq->sequenceToAlignment(27578827, 158545518),
-                OutOfSequence);
-        EXPECT_THROW(seq->sequenceToAlignment(27578866, 158545518),
-                OutOfSequence);
+        EXPECT_EQ(158545518, seq->get_src_size());
+        EXPECT_EQ(158545518, wga->getReferenceSize());
+        EXPECT_EQ(0, seq->sequenceToAlignment(27578828));
+        EXPECT_EQ(2, seq->sequenceToAlignment(27578830));
+        EXPECT_EQ(4, seq->sequenceToAlignment(27578831));
+        EXPECT_EQ(26, seq->sequenceToAlignment(27578850));
+        EXPECT_EQ(41, seq->sequenceToAlignment(27578865));
+        EXPECT_THROW(seq->sequenceToAlignment(27578827), OutOfSequence);
+        EXPECT_THROW(seq->sequenceToAlignment(27578866), OutOfSequence);
     }
 
     TEST(MafReaderTest, LineParser)
     {
-        WholeGenomeAlignment wga("hg18.chr7", NULL);
+        WholeGenomeAlignment *wga = new WholeGenomeAlignment("hg18.chr7",
+                NULL);
         SequenceDetails *seq;
-        ASSERT_NO_THROW(seq = parseMafLine(test_line, wga, factory, NULL));
+        ASSERT_NO_THROW(seq = parseMafLine(test_line, *wga, factory, NULL));
         {
             SCOPED_TRACE("");
             VerifyParsedTestLine(seq, wga);
         }
         delete seq;
+        delete wga;
 
+        wga = new WholeGenomeAlignment("hg18.chr7", NULL);
         set<string> limit;
         limit.insert("random1");
         limit.insert("random2");
-        EXPECT_TRUE(NULL == parseMafLine(test_line, wga, factory, &limit));
+        EXPECT_TRUE(NULL == parseMafLine(test_line, *wga, factory, &limit));
+        EXPECT_THROW(wga->getReferenceSize(), SequenceDoesNotExist);
 
         limit.insert("hg18.chr7");
-        ASSERT_NO_THROW(seq = parseMafLine(test_line, wga, factory, &limit));
+        ASSERT_NO_THROW(seq = parseMafLine(test_line, *wga, factory, &limit));
         {
             SCOPED_TRACE("");
             VerifyParsedTestLine(seq, wga);
         }
         delete seq;
+        delete wga;
 
-        EXPECT_THROW(parseMafLine("random useless stuff", wga, factory,
+        wga = new WholeGenomeAlignment("hg18.chr7", NULL);
+        EXPECT_THROW(parseMafLine("random useless stuff", *wga, factory,
                     NULL), ParseError);
-        EXPECT_THROW(parseMafLine("s name 47 12 + 470 ", wga, factory,
+        EXPECT_THROW(parseMafLine("s name 47 12 + 470 ", *wga, factory,
                     NULL), ParseError);
         EXPECT_THROW(parseMafLine("s panTro1.chr6 28741140Invalid! 38 + 161576975i "
-                    "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG", wga,
+                    "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG", *wga,
                     factory, NULL), ParseError);
+        delete wga;
     }
 
     string test_file = "track name=euArc visibility=pack\n\

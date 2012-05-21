@@ -20,8 +20,9 @@ cds_static::BitSequence * GenerateBitSequence(const BitSequenceFactory *factory,
 }
 
 SequenceDetails * GenerateSequenceDetails(const BitSequenceFactory *factory,
-        size_t start, bool reverse, seqid_t id, const std::string &contents)
+        size_t start, size_t total, bool reverse, seqid_t id,
+        const std::string &contents)
 {
     cds_static::BitSequence *seq = GenerateBitSequence(factory, contents);
-    return new SequenceDetails(start, reverse, id, seq);
+    return new SequenceDetails(start, reverse, total, id, seq);
 }

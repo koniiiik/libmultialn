@@ -78,7 +78,7 @@ SequenceDetails * parseMafLine(const string &line, WholeGenomeAlignment &wga,
 
         // We have all we need, create and return the instance.
         SequenceDetails *datials = new SequenceDetails(start, reverse,
-                id, bitseq);
+                src_size, id, bitseq);
         return datials;
     }
     catch (std::ios_base::failure &e)
@@ -121,7 +121,7 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
             }
             // Skip the line marking the start of a block.
             buf = getNextLine(s);
-            AlignmentBlock *block = new AlignmentBlock(&wga);
+            AlignmentBlock *block = new AlignmentBlock;
             // This try block is required to finish the last alignment
             // block in the MAF and successfully add it to our WGA.
             try

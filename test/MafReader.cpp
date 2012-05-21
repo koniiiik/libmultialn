@@ -20,19 +20,31 @@ using ::testing::Test;
 // A few declarations to be able to test private code...
 namespace maf_reader
 {
-    SequenceDetails * parseMafLine(const string &line,
-            WholeGenomeAlignment &wga, BitSequenceFactory &factory,
-            const set<string> *limit);
+    bool passesLimitCheck(const string &line, const set<string> *limit);
+    SequenceDetails parseMafLine(const string &line,
+            WholeGenomeAlignment &wga, BitSequenceFactory &factory);
 }  // namespace maf_reader
 
 namespace
 {
     using maf_reader::parseMafLine;
+    using maf_reader::passesLimitCheck;
 
     BitSequenceRRRFactory factory;
 
     string test_line = "s hg18.chr7    27578828 38 + 158545518 "
         "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG";
+
+    TEST(MafReaderTest, LimitCheck)
+    {
+        set<string> limit;
+        limit.insert("random1");
+        limit.insert("random2");
+        EXPECT_FALSE(passesLimitCheck(test_line, &limit));
+        limit.insert("hg18.chr7");
+        EXPECT_TRUE(passesLimitCheck(test_line, &limit));
+        EXPECT_TRUE(passesLimitCheck(test_line, NULL));
+    }
 
     void VerifyParsedTestLine(SequenceDetails *seq,
             WholeGenomeAlignment *wga)
@@ -56,39 +68,23 @@ namespace
     {
         WholeGenomeAlignment *wga = new WholeGenomeAlignment("hg18.chr7",
                 NULL);
-        SequenceDetails *seq;
-        ASSERT_NO_THROW(seq = parseMafLine(test_line, *wga, factory, NULL));
+        SequenceDetails seq(0, false, 0, 0, NULL);
+        parseMafLine(test_line, *wga, factory);
+        ASSERT_NO_THROW(seq = parseMafLine(test_line, *wga, factory));
         {
             SCOPED_TRACE("");
-            VerifyParsedTestLine(seq, wga);
+            VerifyParsedTestLine(&seq, wga);
         }
-        delete seq;
         delete wga;
 
         wga = new WholeGenomeAlignment("hg18.chr7", NULL);
-        set<string> limit;
-        limit.insert("random1");
-        limit.insert("random2");
-        EXPECT_TRUE(NULL == parseMafLine(test_line, *wga, factory, &limit));
-        EXPECT_THROW(wga->getReferenceSize(), SequenceDoesNotExist);
-
-        limit.insert("hg18.chr7");
-        ASSERT_NO_THROW(seq = parseMafLine(test_line, *wga, factory, &limit));
-        {
-            SCOPED_TRACE("");
-            VerifyParsedTestLine(seq, wga);
-        }
-        delete seq;
-        delete wga;
-
-        wga = new WholeGenomeAlignment("hg18.chr7", NULL);
-        EXPECT_THROW(parseMafLine("random useless stuff", *wga, factory,
-                    NULL), ParseError);
-        EXPECT_THROW(parseMafLine("s name 47 12 + 470 ", *wga, factory,
-                    NULL), ParseError);
+        EXPECT_THROW(parseMafLine("random useless stuff", *wga, factory),
+                ParseError);
+        EXPECT_THROW(parseMafLine("s name 47 12 + 470 ", *wga, factory),
+                ParseError);
         EXPECT_THROW(parseMafLine("s panTro1.chr6 28741140Invalid! 38 + 161576975i "
                     "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG", *wga,
-                    factory, NULL), ParseError);
+                    factory), ParseError);
         delete wga;
     }
 

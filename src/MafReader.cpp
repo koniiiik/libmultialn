@@ -20,6 +20,7 @@ namespace maf_reader
 {
 
 using std::istream;
+using std::istringstream;
 using std::string;
 using std::set;
 using std::vector;
@@ -38,10 +39,23 @@ string getNextLine(istream &s)
     return buf;
 }
 
-SequenceDetails * parseMafLine(const string &line, WholeGenomeAlignment &wga,
-        BitSequenceFactory &factory, const set<string> *limit)
+bool passesLimitCheck(const string &line, const set<string> *limit)
 {
-    std::istringstream s(line);
+    if (limit == NULL)
+    {
+        return true;
+    }
+    string buf;
+    istringstream s(line);
+    s >> buf;
+    s >> buf;
+    return limit->count(buf) != 0;
+}
+
+SequenceDetails parseMafLine(const string &line, WholeGenomeAlignment &wga,
+        BitSequenceFactory &factory)
+{
+    istringstream s(line);
     s.exceptions(istream::failbit | istream::badbit);
 
     try
@@ -51,11 +65,6 @@ SequenceDetails * parseMafLine(const string &line, WholeGenomeAlignment &wga,
         // Skip the "s" marker at the beginning of the line.
         s >> buf;
         s >> name;
-
-        if (limit != NULL && limit->count(name) == 0)
-        {
-            return NULL;
-        }
 
         size_t start, size, src_size;
         bool reverse = false;
@@ -79,9 +88,7 @@ SequenceDetails * parseMafLine(const string &line, WholeGenomeAlignment &wga,
         seqid_t id = wga.requestSequenceId(name, src_size);
 
         // We have all we need, create and return the instance.
-        SequenceDetails *datials = new SequenceDetails(start, reverse,
-                src_size, id, bitseq);
-        return datials;
+        return SequenceDetails(start, reverse, src_size, id, bitseq);
     }
     catch (std::ios_base::failure &e)
     {
@@ -90,21 +97,16 @@ SequenceDetails * parseMafLine(const string &line, WholeGenomeAlignment &wga,
 }
 
 AlignmentBlock * ParseMafBlock(const vector<string> &block_lines,
-        WholeGenomeAlignment &wga, BitSequenceFactory &factory,
-        const set<string> *limit)
+        WholeGenomeAlignment &wga, BitSequenceFactory &factory)
 {
     AlignmentBlock *block = new AlignmentBlock();
     try
     {
         for (auto it = block_lines.begin(); it != block_lines.end(); ++it)
         {
-            SequenceDetails *details = parseMafLine(*it, wga,
-                    factory, limit);
-            if (details != NULL)
-            {
-                block->addSequence(*details);
-                delete details;
-            }
+            SequenceDetails details = parseMafLine(*it, wga,
+                    factory);
+            block->addSequence(details);
         }
     }
     catch (ParseError &e)
@@ -162,7 +164,10 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
                     {
                         throw ParseError();
                     }
-                    block_lines.push_back(buf);
+                    if (passesLimitCheck(buf, limit))
+                    {
+                        block_lines.push_back(buf);
+                    }
                     buf = getNextLine(s);
                 }
             }
@@ -170,7 +175,7 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
             {
                 can_continue = false;
             }
-            wga.addBlock(ParseMafBlock(block_lines, wga, factory, limit));
+            wga.addBlock(ParseMafBlock(block_lines, wga, factory));
         }
     }
     catch (std::ios_base::failure &e)

@@ -57,6 +57,13 @@ BitString * DoubleBitStringCapacity(BitString *small)
     return large;
 }
 
+BitString * CutBitStringCapacity(BitString *large, size_t new_capacity)
+{
+    // TODO: Some error handling (ensure the requested capacity isn't
+    // larger)
+    return new BitString(large->getData(), new_capacity);
+}
+
 // TODO: Some error handling in getBlockLength and passesLimitCheck might
 // be appropriate.
 

@@ -33,55 +33,52 @@ namespace
                 al = new WholeGenomeAlignment("reference", storage);
 
                 AlignmentBlock *block;
-                SequenceDetails *seq;
+                BitSequence *bitseq;
 
                 seqid_t reference_id = al->requestSequenceId("reference", 240);
                 seqid_t forward_id = al->requestSequenceId("forwardinf", 150);
                 seqid_t reverse_id = al->requestSequenceId("reverseinf", 180);
 
                 block = new AlignmentBlock();
-                seq = GenerateSequenceDetails(GetParam(), 20, 240, false,
-                        reference_id, "111110000011111");
-                block->addSequence(*seq);
-                delete seq;
-                seq = GenerateSequenceDetails(GetParam(), 10, 150, false,
-                        forward_id, "111111100000111");
-                block->addSequence(*seq);
-                delete seq;
-                seq = GenerateSequenceDetails(GetParam(), 50, 180, true,
-                        reverse_id, "000111111111100");
-                block->addSequence(*seq);
-                delete seq;
+                SequenceDetails seq(20, false, 240, reference_id, 1, 15);
+                block->addSequence(seq);
+                seq = SequenceDetails(10, false, 150, forward_id, 16, 15);
+                block->addSequence(seq);
+                seq = SequenceDetails(50, true, 180, reverse_id, 31, 15);
+                block->addSequence(seq);
+                bitseq = GenerateBitSequence(GetParam(), "1"
+                        "111110000011111"
+                        "111111100000111"
+                        "000111111111100");
+                block->setBitSequence(bitseq);
                 al->addBlock(block);
 
                 block = new AlignmentBlock();
-                seq = GenerateSequenceDetails(GetParam(), 30, 240, false,
-                        reference_id, "111110000011111");
-                block->addSequence(*seq);
-                delete seq;
-                seq = GenerateSequenceDetails(GetParam(), 30, 150, false,
-                        forward_id, "111111100000111");
-                block->addSequence(*seq);
-                delete seq;
-                seq = GenerateSequenceDetails(GetParam(), 90, 180, true,
-                        reverse_id, "000111111111100");
-                block->addSequence(*seq);
-                delete seq;
+                seq = SequenceDetails(30, false, 240, reference_id, 1, 15);
+                block->addSequence(seq);
+                seq = SequenceDetails(30, false, 150, forward_id, 16, 15);
+                block->addSequence(seq);
+                seq = SequenceDetails(90, true, 180, reverse_id, 31, 15);
+                block->addSequence(seq);
+                bitseq = GenerateBitSequence(GetParam(), "1"
+                        "111110000011111"
+                        "111111100000111"
+                        "000111111111100");
+                block->setBitSequence(bitseq);
                 al->addBlock(block);
 
                 block = new AlignmentBlock();
-                seq = GenerateSequenceDetails(GetParam(), 50, 240, false,
-                        reference_id, "111110000011111");
-                block->addSequence(*seq);
-                delete seq;
-                seq = GenerateSequenceDetails(GetParam(), 40, 150, false,
-                        forward_id, "000111111111100");
-                block->addSequence(*seq);
-                delete seq;
-                seq = GenerateSequenceDetails(GetParam(), 70, 180, true,
-                        reverse_id, "111111100000111");
-                block->addSequence(*seq);
-                delete seq;
+                seq = SequenceDetails(50, false, 240, reference_id, 1, 15);
+                block->addSequence(seq);
+                seq = SequenceDetails(40, false, 150, forward_id, 16, 15);
+                block->addSequence(seq);
+                seq = SequenceDetails(70, true, 180, reverse_id, 31, 15);
+                block->addSequence(seq);
+                bitseq = GenerateBitSequence(GetParam(), "1"
+                        "111110000011111"
+                        "000111111111100"
+                        "111111100000111");
+                block->setBitSequence(bitseq);
                 al->addBlock(block);
             }
 

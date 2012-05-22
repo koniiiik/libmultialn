@@ -7,7 +7,7 @@
 size_t SequenceDetails::sequenceToAlignment(size_t index) const
 {
     // If the range is taken from the reverse strand, convert the
-    // coordinate to the forward strand's system.
+    // coordinate to its system.
     if (this->reverse_)
     {
         index = this->get_src_size() - index - 1;
@@ -16,17 +16,21 @@ size_t SequenceDetails::sequenceToAlignment(size_t index) const
     {
         throw OutOfSequence();
     }
-    return this->sequence_->select1(index - this->start_ + 1);
+    size_t preceding_ones = this->sequence_->rank1(this->offset_ - 1);
+    return this->sequence_->select1(index - this->start_ + 1 +
+            preceding_ones) - this->offset_;
 }
 
 size_t SequenceDetails::alignmentToSequence(size_t index,
         IntervalBoundary boundary) const
 {
-    if (index >= this->sequence_->getLength())
+    if (index >= this->block_size_)
     {
         throw OutOfSequence();
     }
-    size_t rank = this->sequence_->rank1(index);
+    index += this->offset_;
+    size_t rank = this->sequence_->rank1(index) -
+        this->sequence_->rank1(this->offset_ - 1);
     if (!this->sequence_->access(index))
     {
         if (boundary == INTERVAL_BEGIN)

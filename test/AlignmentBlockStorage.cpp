@@ -14,6 +14,7 @@
 using std::string;
 using ::testing::Test;
 using ::testing::Types;
+using cds_static::BitSequence;
 
 namespace
 {
@@ -28,13 +29,20 @@ namespace
             {
                 storage = new T();
 
-                SequenceDetails *seq1, *seq2, *seq3;
-                seq1 = GenerateSequenceDetails(&fact_rg2, 12, 470, false,
-                        kReferenceSequenceId, "001011");
-                seq2 = GenerateSequenceDetails(&fact_rg2, 15, 470, false,
-                        kReferenceSequenceId, "1111111111");
-                seq3 = GenerateSequenceDetails(&fact_rg2, 30, 470, false,
-                        kReferenceSequenceId, "11111");
+                SequenceDetails seq1(12, false, 470, kReferenceSequenceId,
+                        1, 6);
+                BitSequence *bitseq1 = GenerateBitSequence(&fact_rg2, "1"
+                        "001011");
+
+                SequenceDetails seq2(15, false, 470, kReferenceSequenceId,
+                        1, 10);
+                BitSequence *bitseq2 = GenerateBitSequence(&fact_rg2, "1"
+                        "1111111111");
+
+                SequenceDetails seq3(30, false, 470, kReferenceSequenceId,
+                        1, 5);
+                BitSequence *bitseq3 = GenerateBitSequence(&fact_rg2, "1"
+                        "11111");
 
                 AlignmentBlock *block1, *block2, *block3;
 
@@ -42,13 +50,13 @@ namespace
                 block2 = new AlignmentBlock();
                 block3 = new AlignmentBlock();
 
-                block1->addSequence(*seq1);
-                block2->addSequence(*seq2);
-                block3->addSequence(*seq3);
+                block1->addSequence(seq1);
+                block2->addSequence(seq2);
+                block3->addSequence(seq3);
 
-                delete seq1;
-                delete seq2;
-                delete seq3;
+                block1->setBitSequence(bitseq1);
+                block2->setBitSequence(bitseq2);
+                block3->setBitSequence(bitseq3);
 
                 storage->addBlock(block3);
                 storage->addBlock(block1);

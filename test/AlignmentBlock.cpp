@@ -8,6 +8,8 @@
 #include "BitSequenceFactoryDeclarations.h"
 
 
+using cds_static::BitSequence;
+
 namespace
 {
 
@@ -17,6 +19,7 @@ namespace
 
             AlignmentBlock *block;
             SequenceDetails *seq1, *seq2, *seq3;
+            BitSequence *bit_sequence;
 
             virtual void SetUp()
             {
@@ -26,13 +29,20 @@ namespace
                 // reference:   11111111000000000000001111111111
                 // informant1:  11111100000000001111111100000000
                 // informant2:  00001111111111110000001111111111
-                seq1 = GenerateSequenceDetails(GetParam(), 47, 147, false,
-                        kReferenceSequenceId,
-                        "11111111000000000000001111111111");
-                seq2 = GenerateSequenceDetails(GetParam(), 47, 470, false,
-                        2, "11111100000000001111111100000000");
-                seq3 = GenerateSequenceDetails(GetParam(), 47, 747, false,
-                        3, "00001111111111110000001111111111");
+                seq1 = new SequenceDetails(47, false, 147,
+                        kReferenceSequenceId, 1, 32);
+                seq2 = new SequenceDetails(47, false, 470, 2, 33, 32);
+                seq3 = new SequenceDetails(47, false, 747, 3, 65, 32);
+
+                bit_sequence = GenerateBitSequence(GetParam(), "1"
+                        "11111111000000000000001111111111"
+                        "11111100000000001111111100000000"
+                        "00001111111111110000001111111111");
+
+                seq1->set_sequence(bit_sequence);
+                seq2->set_sequence(bit_sequence);
+                seq3->set_sequence(bit_sequence);
+                block->setBitSequence(bit_sequence);
             }
 
             virtual void TearDown()
@@ -154,16 +164,11 @@ namespace
     {
         AlignmentBlock *a = new AlignmentBlock();
         AlignmentBlock *b = new AlignmentBlock();
-        SequenceDetails *seq1 = GenerateSequenceDetails(&fact_rg2, 47, 147, false,
-                kReferenceSequenceId, "001011");
-        SequenceDetails *seq2 = GenerateSequenceDetails(&fact_rg2, 74, 470, false,
-                kReferenceSequenceId, "110100");
+        SequenceDetails seq1(47, false, 147, kReferenceSequenceId, 0, 12);
+        SequenceDetails seq2(74, false, 470, kReferenceSequenceId, 12, 10);
 
-        a->addSequence(*seq1);
-        b->addSequence(*seq2);
-
-        delete seq1;
-        delete seq2;
+        a->addSequence(seq1);
+        b->addSequence(seq2);
 
         EXPECT_TRUE(AlignmentBlock::compareReferencePosition(a, b));
         EXPECT_FALSE(AlignmentBlock::compareReferencePosition(b, a));

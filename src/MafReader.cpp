@@ -24,6 +24,7 @@ using std::istringstream;
 using std::string;
 using std::set;
 using std::vector;
+using cds_utils::BitString;
 
 string getNextLine(istream &s)
 {
@@ -37,6 +38,20 @@ string getNextLine(istream &s)
         getline(s, buf);
     }
     return buf;
+}
+
+// TODO: Some error handling in getBlockLength and passesLimitCheck might
+// be appropriate.
+
+size_t getBlockLength(const string &line)
+{
+    string buf;
+    istringstream s(line);
+    for (size_t i = 0; i < 7; ++i)
+    {
+        s >> buf;
+    }
+    return buf.size();
 }
 
 bool passesLimitCheck(const string &line, const set<string> *limit)
@@ -53,7 +68,7 @@ bool passesLimitCheck(const string &line, const set<string> *limit)
 }
 
 SequenceDetails parseMafLine(const string &line, WholeGenomeAlignment &wga,
-        BitSequenceFactory &factory)
+        size_t offset, BitString &bitstr)
 {
     istringstream s(line);
     s.exceptions(istream::failbit | istream::badbit);
@@ -77,18 +92,16 @@ SequenceDetails parseMafLine(const string &line, WholeGenomeAlignment &wga,
         // We build a BitString according to the sequence we read, dashes (aka
         // insertions) are zeroes, everything else is one.
         s >> buf;
-        cds_utils::BitString bitstr(buf.size());
         for (size_t i = 0; i < buf.size(); ++i)
         {
-            bitstr.setBit(i, buf[i] != '-');
+            bitstr.setBit(i + offset, buf[i] != '-');
         }
-
-        cds_static::BitSequence *bitseq = factory.getInstance(bitstr);
 
         seqid_t id = wga.requestSequenceId(name, src_size);
 
         // We have all we need, create and return the instance.
-        return SequenceDetails(start, reverse, src_size, id, bitseq);
+        return SequenceDetails(start, reverse, src_size, id, offset,
+                buf.size());
     }
     catch (std::ios_base::failure &e)
     {
@@ -99,14 +112,24 @@ SequenceDetails parseMafLine(const string &line, WholeGenomeAlignment &wga,
 AlignmentBlock * ParseMafBlock(const vector<string> &block_lines,
         WholeGenomeAlignment &wga, BitSequenceFactory &factory)
 {
+    if (block_lines.size() == 0)
+    {
+        throw ParseError();
+    }
     AlignmentBlock *block = new AlignmentBlock();
+    size_t block_length = getBlockLength(block_lines[0]);
+    size_t total_length = block_lines.size() * block_length + 1;
+    BitString bitstr(total_length);
+    bitstr.setBit(0, 1);
     try
     {
+        size_t offset = 1;
         for (auto it = block_lines.begin(); it != block_lines.end(); ++it)
         {
             SequenceDetails details = parseMafLine(*it, wga,
-                    factory);
+                    offset, bitstr);
             block->addSequence(details);
+            offset += block_length;
         }
     }
     catch (ParseError &e)
@@ -114,6 +137,7 @@ AlignmentBlock * ParseMafBlock(const vector<string> &block_lines,
         delete block;
         throw;
     }
+    block->setBitSequence(factory.getInstance(bitstr));
     return block;
 }
 

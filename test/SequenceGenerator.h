@@ -11,8 +11,4 @@
 cds_static::BitSequence * GenerateBitSequence(
         const BitSequenceFactory *factory, const std::string &contents);
 
-SequenceDetails * GenerateSequenceDetails(const BitSequenceFactory *factory,
-        size_t start, size_t total, bool reverse, seqid_t id,
-        const std::string &contents);
-
 #endif /* SEQUENCEGENERATOR_H */

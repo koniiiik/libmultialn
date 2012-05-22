@@ -2,6 +2,8 @@
 #include <string>
 #include <set>
 #include <sstream>
+#include <BitString.h>
+#include <BitSequence.h>
 
 #include <MafReader.h>
 #include <WholeGenomeAlignment.h>
@@ -16,13 +18,15 @@ using std::set;
 using maf_reader::ReadMafFile;
 using maf_reader::ParseError;
 using ::testing::Test;
+using cds_utils::BitString;
+using cds_static::BitSequence;
 
 // A few declarations to be able to test private code...
 namespace maf_reader
 {
     bool passesLimitCheck(const string &line, const set<string> *limit);
     SequenceDetails parseMafLine(const string &line,
-            WholeGenomeAlignment &wga, BitSequenceFactory &factory);
+            WholeGenomeAlignment &wga, size_t offset, BitString &bitstr);
 }  // namespace maf_reader
 
 namespace
@@ -68,23 +72,26 @@ namespace
     {
         WholeGenomeAlignment *wga = new WholeGenomeAlignment("hg18.chr7",
                 NULL);
-        SequenceDetails seq(0, false, 0, 0, NULL);
-        parseMafLine(test_line, *wga, factory);
-        ASSERT_NO_THROW(seq = parseMafLine(test_line, *wga, factory));
+        SequenceDetails seq(0, false, 0, 0, 0, 0);
+        BitString bitstr(100);
+        ASSERT_NO_THROW(seq = parseMafLine(test_line, *wga, 0, bitstr));
         {
             SCOPED_TRACE("");
+            BitSequence *bit_sequence = factory.getInstance(bitstr);
+            seq.set_sequence(bit_sequence);
             VerifyParsedTestLine(&seq, wga);
+            delete bit_sequence;
         }
         delete wga;
 
         wga = new WholeGenomeAlignment("hg18.chr7", NULL);
-        EXPECT_THROW(parseMafLine("random useless stuff", *wga, factory),
+        EXPECT_THROW(parseMafLine("random useless stuff", *wga, 0, bitstr),
                 ParseError);
-        EXPECT_THROW(parseMafLine("s name 47 12 + 470 ", *wga, factory),
+        EXPECT_THROW(parseMafLine("s name 47 12 + 470 ", *wga, 0, bitstr),
                 ParseError);
         EXPECT_THROW(parseMafLine("s panTro1.chr6 28741140Invalid! 38 + 161576975i "
-                    "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG", *wga,
-                    factory), ParseError);
+                    "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG", *wga, 0,
+                    bitstr), ParseError);
         delete wga;
     }
 

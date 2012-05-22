@@ -8,6 +8,8 @@
 #include "BitSequenceFactoryDeclarations.h"
 
 
+using cds_static::BitSequence;
+
 namespace
 {
 
@@ -16,21 +18,28 @@ namespace
         protected:
 
             SequenceDetails *forward, *backward;
+            BitSequence *bit_sequence;
 
             virtual void SetUp()
             {
-                forward = GenerateSequenceDetails(GetParam(), 47, 84,
-                        false, kReferenceSequenceId,
+                forward = new SequenceDetails(47, false, 84,
+                        kReferenceSequenceId, 1, 32);
+                backward = new SequenceDetails(16, true, 64,
+                        kReferenceSequenceId, 33, 32);
+
+                bit_sequence = GenerateBitSequence(GetParam(), "1"
+                        "00001111111111110000000011110000"
                         "00001111111111110000000011110000");
-                backward = GenerateSequenceDetails(GetParam(), 16, 64,
-                        true, kReferenceSequenceId,
-                        "00001111111111110000000011110000");
+
+                forward->set_sequence(bit_sequence);
+                backward->set_sequence(bit_sequence);
             }
 
             virtual void TearDown()
             {
                 delete forward;
                 delete backward;
+                delete bit_sequence;
             }
     };
 
@@ -98,15 +107,10 @@ namespace
 
     TEST(SequenceDetailsTest, Comparison)
     {
-        SequenceDetails *first = GenerateSequenceDetails(&fact_rg2, 47,
-                84, false, 1, "1100");
-        SequenceDetails *second = GenerateSequenceDetails(&fact_rg2, 47,
-                84, false, 2, "0011");
-        EXPECT_TRUE(SequenceDetails::compareById(*first, *second));
-        EXPECT_FALSE(SequenceDetails::compareById(*second, *first));
-
-        delete first;
-        delete second;
+        SequenceDetails first(47, false, 84, 1, 5, 47);
+        SequenceDetails second(47, false, 84, 2, 4, 52);
+        EXPECT_TRUE(SequenceDetails::compareById(first, second));
+        EXPECT_FALSE(SequenceDetails::compareById(second, first));
     }
 
 }  // namespace

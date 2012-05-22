@@ -87,21 +87,24 @@ namespace
     TEST_F(AlignmentBlockStorageTest, Iterators)
     {
         EXPECT_THROW(storage->find(5), OutOfSequence);
-        AlignmentBlockStorage::Iterator *it1, *it2;
-        EXPECT_NO_THROW(it1 = storage->first());
+        AlignmentBlockStorage::iterator it1, it2;
+        EXPECT_NO_THROW(it1 = storage->begin());
         EXPECT_NO_THROW(it2 = storage->find(15));
-        EXPECT_EQ(12, (*it1)->getReferenceSequence()->get_start());
-        EXPECT_EQ(12, (**it1).getReferenceSequence()->get_start());
-        EXPECT_FALSE(*it1 == *it2);
-        EXPECT_TRUE(*it1 != *it2);
-        (*it1)++;
-        EXPECT_EQ(15, (*it1)->getReferenceSequence()->get_start());
-        EXPECT_TRUE(*it1 == *it2);
-        EXPECT_FALSE(*it1 != *it2);
-        (*it1)++;
-        EXPECT_EQ(30, (*it1)->getReferenceSequence()->get_start());
-        delete it2;
-        delete it1;
+        EXPECT_EQ(12, it1->getReferenceSequence()->get_start());
+        EXPECT_EQ(12, (*it1).getReferenceSequence()->get_start());
+        EXPECT_FALSE(it1 == it2);
+        EXPECT_TRUE(it1 != it2);
+        it1++;
+        EXPECT_EQ(15, it1->getReferenceSequence()->get_start());
+        EXPECT_TRUE(it1 == it2);
+        EXPECT_FALSE(it1 != it2);
+        it1++;
+        EXPECT_EQ(30, it1->getReferenceSequence()->get_start());
+        EXPECT_TRUE(it1 != storage->end());
+        EXPECT_FALSE(it1 == storage->end());
+        ++it1;
+        EXPECT_FALSE(it1 != storage->end());
+        EXPECT_TRUE(it1 == storage->end());
     }
 
 } /* namespace */

@@ -24,6 +24,7 @@ using cds_static::BitSequence;
 // A few declarations to be able to test private code...
 namespace maf_reader
 {
+    BitString * DoubleBitStringCapacity(BitString *small);
     bool passesLimitCheck(const string &line, const set<string> *limit);
     SequenceDetails parseMafLine(const string &line,
             WholeGenomeAlignment &wga, size_t offset, BitString &bitstr);
@@ -33,11 +34,40 @@ namespace
 {
     using maf_reader::parseMafLine;
     using maf_reader::passesLimitCheck;
+    using maf_reader::DoubleBitStringCapacity;
 
     BitSequenceRRRFactory factory;
 
     string test_line = "s hg18.chr7    27578828 38 + 158545518 "
         "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG";
+
+    TEST(MafReaderTest, BitstringDoubling)
+    {
+        string test_bitvector = "00001111111111110000001111111111010";
+        BitString *first = new BitString(test_bitvector.size());
+        for (size_t i = 0; i < test_bitvector.size(); ++i)
+        {
+            first->setBit(i, test_bitvector[i] == '1');
+        }
+
+        BitString *second = DoubleBitStringCapacity(first);
+        ASSERT_TRUE(NULL != second);
+        EXPECT_EQ(first->getLength() * 2, second->getLength());
+        for (size_t i = 0; i < first->getLength(); ++i)
+        {
+            SCOPED_TRACE(i);
+            EXPECT_EQ(first->getBit(i), second->getBit(i));
+        }
+
+        for (size_t i = first->getLength(); i < second->getLength(); ++i)
+        {
+            SCOPED_TRACE(i);
+            EXPECT_EQ(false, second->getBit(i));
+        }
+
+        delete first;
+        delete second;
+    }
 
     TEST(MafReaderTest, LimitCheck)
     {

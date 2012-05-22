@@ -7,6 +7,7 @@
 #include <ios>
 
 #include <BitString.h>
+#include <libcdsBasics.h>
 
 #include <MafReader.h>
 #include <WholeGenomeAlignment.h>
@@ -26,6 +27,8 @@ using std::set;
 using std::vector;
 using cds_utils::BitString;
 
+const size_t kInitialBitStringCapacity = 128;
+
 string getNextLine(istream &s)
 {
     using std::getline;
@@ -38,6 +41,20 @@ string getNextLine(istream &s)
         getline(s, buf);
     }
     return buf;
+}
+
+BitString * DoubleBitStringCapacity(BitString *small)
+{
+    size_t capacity = small->getLength();
+    capacity <<= 1;
+    BitString *large = new BitString(capacity);
+    auto small_data = small->getData(), large_data = large->getData();
+    size_t element_count = small->getLength()/cds_utils::W + 1;
+    for (size_t i = 0; i < element_count; ++i)
+    {
+        large_data[i] = small_data[i];
+    }
+    return large;
 }
 
 // TODO: Some error handling in getBlockLength and passesLimitCheck might

@@ -4,6 +4,7 @@
 #include <SequenceDetails.h>
 #include <AlignmentBlockStorage.h>
 #include <BinSearchAlignmentBlockStorage.h>
+#include <RankAlignmentBlockStorage.h>
 #include <MultialnConstants.h>
 
 #include "SequenceGenerator.h"
@@ -12,10 +13,12 @@
 
 using std::string;
 using ::testing::Test;
+using ::testing::Types;
 
 namespace
 {
 
+    template <typename T>
     class AlignmentBlockStorageTest: public Test
     {
         protected:
@@ -23,7 +26,7 @@ namespace
 
             virtual void SetUp()
             {
-                storage = new BinSearchAlignmentBlockStorage;
+                storage = new T();
 
                 SequenceDetails *seq1, *seq2, *seq3;
                 seq1 = GenerateSequenceDetails(&fact_rg2, 12, 470, false,
@@ -58,38 +61,42 @@ namespace
             }
     };
 
-    TEST_F(AlignmentBlockStorageTest, CorrectSize)
+    typedef Types<BinSearchAlignmentBlockStorage,
+            RankAlignmentBlockStorage> AlignmentBlockStorageTypes;
+    TYPED_TEST_CASE(AlignmentBlockStorageTest, AlignmentBlockStorageTypes);
+
+    TYPED_TEST(AlignmentBlockStorageTest, CorrectSize)
     {
-        EXPECT_EQ(3, storage->size());
+        EXPECT_EQ(3, this->storage->size());
     }
 
-    TEST_F(AlignmentBlockStorageTest, FindsExistingBlocks)
+    TYPED_TEST(AlignmentBlockStorageTest, FindsExistingBlocks)
     {
-        EXPECT_EQ(12, storage->getBlock(12)->getReferenceSequence()->get_start());
-        EXPECT_EQ(12, storage->getBlock(14)->getReferenceSequence()->get_start());
-        EXPECT_EQ(15, storage->getBlock(20)->getReferenceSequence()->get_start());
-        EXPECT_EQ(30, storage->getBlock(32)->getReferenceSequence()->get_start());
+        EXPECT_EQ(12, this->storage->getBlock(12)->getReferenceSequence()->get_start());
+        EXPECT_EQ(12, this->storage->getBlock(14)->getReferenceSequence()->get_start());
+        EXPECT_EQ(15, this->storage->getBlock(20)->getReferenceSequence()->get_start());
+        EXPECT_EQ(30, this->storage->getBlock(32)->getReferenceSequence()->get_start());
     }
 
-    TEST_F(AlignmentBlockStorageTest, ThrowsOnNonexisting)
+    TYPED_TEST(AlignmentBlockStorageTest, ThrowsOnNonexisting)
     {
-        EXPECT_THROW(storage->getBlock(47), OutOfSequence);
-        EXPECT_THROW(storage->getBlock(11), OutOfSequence);
-        EXPECT_THROW(storage->getBlock(25), OutOfSequence);
-        EXPECT_THROW(storage->getBlock(29), OutOfSequence);
-        EXPECT_NO_THROW(storage->getBlock(12));
-        EXPECT_NO_THROW(storage->getBlock(14));
-        EXPECT_NO_THROW(storage->getBlock(15));
-        EXPECT_NO_THROW(storage->getBlock(24));
-        EXPECT_NO_THROW(storage->getBlock(32));
+        EXPECT_THROW(this->storage->getBlock(47), OutOfSequence);
+        EXPECT_THROW(this->storage->getBlock(11), OutOfSequence);
+        EXPECT_THROW(this->storage->getBlock(25), OutOfSequence);
+        EXPECT_THROW(this->storage->getBlock(29), OutOfSequence);
+        EXPECT_NO_THROW(this->storage->getBlock(12));
+        EXPECT_NO_THROW(this->storage->getBlock(14));
+        EXPECT_NO_THROW(this->storage->getBlock(15));
+        EXPECT_NO_THROW(this->storage->getBlock(24));
+        EXPECT_NO_THROW(this->storage->getBlock(32));
     }
 
-    TEST_F(AlignmentBlockStorageTest, Iterators)
+    TYPED_TEST(AlignmentBlockStorageTest, Iterators)
     {
-        EXPECT_THROW(storage->find(5), OutOfSequence);
+        EXPECT_THROW(this->storage->find(5), OutOfSequence);
         AlignmentBlockStorage::iterator it1, it2;
-        EXPECT_NO_THROW(it1 = storage->begin());
-        EXPECT_NO_THROW(it2 = storage->find(15));
+        EXPECT_NO_THROW(it1 = this->storage->begin());
+        EXPECT_NO_THROW(it2 = this->storage->find(15));
         EXPECT_EQ(12, it1->getReferenceSequence()->get_start());
         EXPECT_EQ(12, (*it1).getReferenceSequence()->get_start());
         EXPECT_FALSE(it1 == it2);
@@ -100,11 +107,11 @@ namespace
         EXPECT_FALSE(it1 != it2);
         it1++;
         EXPECT_EQ(30, it1->getReferenceSequence()->get_start());
-        EXPECT_TRUE(it1 != storage->end());
-        EXPECT_FALSE(it1 == storage->end());
+        EXPECT_TRUE(it1 != this->storage->end());
+        EXPECT_FALSE(it1 == this->storage->end());
         ++it1;
-        EXPECT_FALSE(it1 != storage->end());
-        EXPECT_TRUE(it1 == storage->end());
+        EXPECT_FALSE(it1 != this->storage->end());
+        EXPECT_TRUE(it1 == this->storage->end());
     }
 
 } /* namespace */

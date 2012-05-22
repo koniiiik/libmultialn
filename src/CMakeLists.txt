@@ -8,6 +8,8 @@ ADD_LIBRARY(multialn
     ${PROJECT_SOURCE_DIR}/include/AlignmentBlockStorage.h
     BinSearchAlignmentBlockStorage.cpp
     ${PROJECT_SOURCE_DIR}/include/BinSearchAlignmentBlockStorage.h
+    RankAlignmentBlockStorage.cpp
+    ${PROJECT_SOURCE_DIR}/include/RankAlignmentBlockStorage.h
     WholeGenomeAlignment.cpp
     ${PROJECT_SOURCE_DIR}/include/WholeGenomeAlignment.h
     MafReader.cpp

@@ -47,6 +47,7 @@ class SequenceDetails
         size_t rank(size_t index) const;
         size_t select(size_t index) const;
 
+        // TODO: This won't work if the strand is -.
         size_t get_start() const
         {
             return this->start_;

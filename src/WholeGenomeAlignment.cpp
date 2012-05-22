@@ -19,7 +19,7 @@ using cds_static::BitSequence;
 
 WholeGenomeAlignment::WholeGenomeAlignment(const string &reference,
         AlignmentBlockStorage *storage):
-    reference_(reference), storage_(storage)
+    reference_(reference), storage_(storage), bit_sequence_(NULL)
 {
     this->sequence_name_map_[reference] = kReferenceSequenceId;
 }
@@ -27,6 +27,7 @@ WholeGenomeAlignment::WholeGenomeAlignment(const string &reference,
 WholeGenomeAlignment::~WholeGenomeAlignment()
 {
     delete this->storage_;
+    delete this->bit_sequence_;
 }
 
 size_t WholeGenomeAlignment::mapPositionToInformant(size_t position,
@@ -246,4 +247,14 @@ vector<string> * WholeGenomeAlignment::getSequenceList() const
         }
     }
     return res;
+}
+
+void WholeGenomeAlignment::setBitSequence(BitSequence *bit_sequence)
+{
+    this->bit_sequence_ = bit_sequence;
+    for (auto it = this->storage_->begin(); it != this->storage_->end();
+            ++it)
+    {
+        it->setBitSequence(bit_sequence);
+    }
 }

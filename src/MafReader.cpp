@@ -7,6 +7,7 @@
 #include <ios>
 
 #include <BitString.h>
+#include <BitSequence.h>
 #include <libcdsBasics.h>
 
 #include <MafReader.h>
@@ -26,6 +27,7 @@ using std::string;
 using std::set;
 using std::vector;
 using cds_utils::BitString;
+using cds_static::BitSequence;
 
 const size_t kInitialBitStringCapacity = 128;
 
@@ -92,7 +94,7 @@ bool passesLimitCheck(const string &line, const set<string> *limit)
 }
 
 SequenceDetails parseMafLine(const string &line, WholeGenomeAlignment &wga,
-        size_t offset, BitString &bitstr)
+        size_t offset, BitString &bitstr, size_t expected_block_length)
 {
     istringstream s(line);
     s.exceptions(istream::failbit | istream::badbit);
@@ -116,7 +118,12 @@ SequenceDetails parseMafLine(const string &line, WholeGenomeAlignment &wga,
         // We build a BitString according to the sequence we read, dashes (aka
         // insertions) are zeroes, everything else is one.
         s >> buf;
-        for (size_t i = 0; i < buf.size(); ++i)
+        if (buf.size() != expected_block_length)
+        {
+            throw ParseError();
+        }
+
+        for (size_t i = 0; i < expected_block_length; ++i)
         {
             bitstr.setBit(i + offset, buf[i] != '-');
         }
@@ -134,24 +141,27 @@ SequenceDetails parseMafLine(const string &line, WholeGenomeAlignment &wga,
 }
 
 AlignmentBlock * ParseMafBlock(const vector<string> &block_lines,
-        WholeGenomeAlignment &wga, BitSequenceFactory &factory)
+        WholeGenomeAlignment &wga, BitString *&bitstr, size_t &offset)
 {
     if (block_lines.size() == 0)
     {
         throw ParseError();
     }
-    AlignmentBlock *block = new AlignmentBlock();
     size_t block_length = getBlockLength(block_lines[0]);
-    size_t total_length = block_lines.size() * block_length + 1;
-    BitString bitstr(total_length);
-    bitstr.setBit(0, 1);
+    size_t total_length = block_lines.size() * block_length;
+    while (bitstr->getLength() - offset <= total_length)
+    {
+        BitString *temp = DoubleBitStringCapacity(bitstr);
+        delete bitstr;
+        bitstr = temp;
+    }
+    AlignmentBlock *block = new AlignmentBlock();
     try
     {
-        size_t offset = 1;
         for (auto it = block_lines.begin(); it != block_lines.end(); ++it)
         {
             SequenceDetails details = parseMafLine(*it, wga,
-                    offset, bitstr);
+                    offset, *bitstr, block_length);
             block->addSequence(details);
             offset += block_length;
         }
@@ -161,7 +171,6 @@ AlignmentBlock * ParseMafBlock(const vector<string> &block_lines,
         delete block;
         throw;
     }
-    block->setBitSequence(factory.getInstance(bitstr));
     return block;
 }
 
@@ -176,6 +185,11 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
         BitSequenceFactory &factory, const set<string> *limit)
 {
     s.exceptions(istream::failbit | istream::badbit);
+    BitString *bitstr = new BitString(kInitialBitStringCapacity);
+    bitstr->setBit(0, 1);
+    // The offset variable is increased each time a new line is parsed by
+    // its length.
+    size_t offset = 1;
     try
     {
         bool can_continue = true;
@@ -223,11 +237,26 @@ void ReadMafFile(istream &s, WholeGenomeAlignment &wga,
             {
                 can_continue = false;
             }
-            wga.addBlock(ParseMafBlock(block_lines, wga, factory));
+            wga.addBlock(ParseMafBlock(block_lines, wga, bitstr, offset));
         }
     }
     catch (std::ios_base::failure &e)
-    { };
+    { }
+    catch (ParseError &e)
+    {
+        delete bitstr;
+        throw;
+    }
+    // Finally, we create a BitSequence out of the BitString and give it
+    // over to the WholeGenomeAlignment.
+    {
+        BitString *temp = CutBitStringCapacity(bitstr, offset);
+        delete bitstr;
+        bitstr = temp;
+    }
+    BitSequence *bitseq = factory.getInstance(*bitstr);
+    delete bitstr;
+    wga.setBitSequence(bitseq);
 }
 
 } /* namespace maf_reader */

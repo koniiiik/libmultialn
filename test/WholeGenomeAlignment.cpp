@@ -33,7 +33,19 @@ namespace
                 al = new WholeGenomeAlignment("reference", storage);
 
                 AlignmentBlock *block;
-                BitSequence *bitseq;
+
+                BitSequence *bitseq = GenerateBitSequence(GetParam(), "1"
+                        "111110000011111"
+                        "111111100000111"
+                        "000111111111100"
+
+                        "111110000011111"
+                        "111111100000111"
+                        "000111111111100"
+
+                        "111110000011111"
+                        "000111111111100"
+                        "111111100000111");
 
                 seqid_t reference_id = al->requestSequenceId("reference", 240);
                 seqid_t forward_id = al->requestSequenceId("forwardinf", 150);
@@ -46,40 +58,27 @@ namespace
                 block->addSequence(seq);
                 seq = SequenceDetails(50, true, 180, reverse_id, 31, 15);
                 block->addSequence(seq);
-                bitseq = GenerateBitSequence(GetParam(), "1"
-                        "111110000011111"
-                        "111111100000111"
-                        "000111111111100");
-                block->setBitSequence(bitseq);
                 al->addBlock(block);
 
                 block = new AlignmentBlock();
-                seq = SequenceDetails(30, false, 240, reference_id, 1, 15);
+                seq = SequenceDetails(30, false, 240, reference_id, 46, 15);
                 block->addSequence(seq);
-                seq = SequenceDetails(30, false, 150, forward_id, 16, 15);
+                seq = SequenceDetails(30, false, 150, forward_id, 61, 15);
                 block->addSequence(seq);
-                seq = SequenceDetails(90, true, 180, reverse_id, 31, 15);
+                seq = SequenceDetails(90, true, 180, reverse_id, 76, 15);
                 block->addSequence(seq);
-                bitseq = GenerateBitSequence(GetParam(), "1"
-                        "111110000011111"
-                        "111111100000111"
-                        "000111111111100");
-                block->setBitSequence(bitseq);
                 al->addBlock(block);
 
                 block = new AlignmentBlock();
-                seq = SequenceDetails(50, false, 240, reference_id, 1, 15);
+                seq = SequenceDetails(50, false, 240, reference_id, 91, 15);
                 block->addSequence(seq);
-                seq = SequenceDetails(40, false, 150, forward_id, 16, 15);
+                seq = SequenceDetails(40, false, 150, forward_id, 106, 15);
                 block->addSequence(seq);
-                seq = SequenceDetails(70, true, 180, reverse_id, 31, 15);
+                seq = SequenceDetails(70, true, 180, reverse_id, 121, 15);
                 block->addSequence(seq);
-                bitseq = GenerateBitSequence(GetParam(), "1"
-                        "111110000011111"
-                        "000111111111100"
-                        "111111100000111");
-                block->setBitSequence(bitseq);
                 al->addBlock(block);
+
+                al->setBitSequence(bitseq);
             }
 
             virtual void TearDown()

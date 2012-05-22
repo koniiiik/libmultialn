@@ -24,6 +24,7 @@ namespace
     {
         protected:
             AlignmentBlockStorage *storage;
+            BitSequence * bit_sequence;
 
             virtual void SetUp()
             {
@@ -31,17 +32,14 @@ namespace
 
                 SequenceDetails seq1(12, false, 470, kReferenceSequenceId,
                         1, 6);
-                BitSequence *bitseq1 = GenerateBitSequence(&fact_rg2, "1"
-                        "001011");
-
                 SequenceDetails seq2(15, false, 470, kReferenceSequenceId,
-                        1, 10);
-                BitSequence *bitseq2 = GenerateBitSequence(&fact_rg2, "1"
-                        "1111111111");
-
+                        7, 10);
                 SequenceDetails seq3(30, false, 470, kReferenceSequenceId,
-                        1, 5);
-                BitSequence *bitseq3 = GenerateBitSequence(&fact_rg2, "1"
+                        17, 5);
+
+                bit_sequence = GenerateBitSequence(&fact_rg2, "1"
+                        "001011"
+                        "1111111111"
                         "11111");
 
                 AlignmentBlock *block1, *block2, *block3;
@@ -54,9 +52,9 @@ namespace
                 block2->addSequence(seq2);
                 block3->addSequence(seq3);
 
-                block1->setBitSequence(bitseq1);
-                block2->setBitSequence(bitseq2);
-                block3->setBitSequence(bitseq3);
+                block1->setBitSequence(bit_sequence);
+                block2->setBitSequence(bit_sequence);
+                block3->setBitSequence(bit_sequence);
 
                 storage->addBlock(block3);
                 storage->addBlock(block1);
@@ -66,6 +64,7 @@ namespace
             virtual void TearDown()
             {
                 delete storage;
+                delete bit_sequence;
             }
     };
 

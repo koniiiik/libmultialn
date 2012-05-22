@@ -30,9 +30,8 @@ class AlignmentBlock
         typedef std::map<seqid_t, size_t> PositionMapping;
 
         AlignmentBlock():
-            prepared_(false), bit_sequence_(NULL)
+            prepared_(false)
         { }
-        ~AlignmentBlock();
 
         /*
         ** Takes a position in the reference sequence and maps it to a
@@ -90,7 +89,6 @@ class AlignmentBlock
         typedef std::vector<SequenceDetails> Container;
         Container sequences_;
         bool prepared_;
-        cds_static::BitSequence *bit_sequence_;
 
         void prepare();
 

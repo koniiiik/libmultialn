@@ -15,11 +15,6 @@
 using std::sort;
 using cds_static::BitSequence;
 
-AlignmentBlock::~AlignmentBlock()
-{
-    delete this->bit_sequence_;
-}
-
 size_t AlignmentBlock::mapPositionToInformant(const size_t pos,
         seqid_t informant, const IntervalBoundary boundary)
 {
@@ -89,7 +84,6 @@ const SequenceDetails * AlignmentBlock::getSequence(seqid_t sequence)
 
 void AlignmentBlock::setBitSequence(BitSequence *sequence)
 {
-    this->bit_sequence_ = sequence;
     this->prepare();
     for (auto it = this->sequences_.begin(); it != this->sequences_.end();
             ++it)

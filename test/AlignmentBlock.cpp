@@ -51,6 +51,7 @@ namespace
                 delete seq1;
                 delete seq2;
                 delete seq3;
+                delete bit_sequence;
             }
     };
 

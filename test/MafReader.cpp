@@ -27,7 +27,8 @@ namespace maf_reader
     BitString * DoubleBitStringCapacity(BitString *small);
     bool passesLimitCheck(const string &line, const set<string> *limit);
     SequenceDetails parseMafLine(const string &line,
-            WholeGenomeAlignment &wga, size_t offset, BitString &bitstr);
+            WholeGenomeAlignment &wga, size_t offset, BitString &bitstr,
+            size_t expected_block_length);
 }  // namespace maf_reader
 
 namespace
@@ -104,7 +105,7 @@ namespace
                 NULL);
         SequenceDetails seq(0, false, 0, 0, 0, 0);
         BitString bitstr(100);
-        ASSERT_NO_THROW(seq = parseMafLine(test_line, *wga, 0, bitstr));
+        ASSERT_NO_THROW(seq = parseMafLine(test_line, *wga, 1, bitstr, 42));
         {
             SCOPED_TRACE("");
             BitSequence *bit_sequence = factory.getInstance(bitstr);
@@ -115,13 +116,15 @@ namespace
         delete wga;
 
         wga = new WholeGenomeAlignment("hg18.chr7", NULL);
-        EXPECT_THROW(parseMafLine("random useless stuff", *wga, 0, bitstr),
+        EXPECT_THROW(parseMafLine("random useless stuff", *wga, 1, bitstr, 47),
                 ParseError);
-        EXPECT_THROW(parseMafLine("s name 47 12 + 470 ", *wga, 0, bitstr),
+        EXPECT_THROW(parseMafLine("s name 47 12 + 470 ", *wga, 1, bitstr, 47),
                 ParseError);
         EXPECT_THROW(parseMafLine("s panTro1.chr6 28741140Invalid! 38 + 161576975i "
-                    "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG", *wga, 0,
-                    bitstr), ParseError);
+                    "AAA-GGGAATGTTAACCAAATGA---ATTGTCTCTTACGGTG", *wga, 1,
+                    bitstr, 42), ParseError);
+        EXPECT_THROW(parseMafLine(test_line, *wga, 1, bitstr, 43),
+                ParseError);
         delete wga;
     }
 

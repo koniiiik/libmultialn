@@ -11,6 +11,11 @@
 #include <AlignmentBlockStorage.h>
 #include <MultialnConstants.h>
 
+// forward declaration
+namespace cds_static
+{
+class BitSequence;
+}
 
 class MappingDoesNotExist: public std::exception
 {
@@ -122,13 +127,21 @@ class WholeGenomeAlignment
         */
         std::vector<std::string> * getSequenceList() const;
 
+        /*
+        ** Provides the instance of BitSequence to be used by this
+        ** alignment class. This is passed on to each AlignmentBlock which
+        ** in turn passes it to its SequenceDetails.
+        */
+        void setBitSequence(cds_static::BitSequence *bit_sequence);
+
 
     private:
         // This maps sequence IDs to tuples (name, total length).
         std::map<seqid_t, std::tuple<std::string, size_t> > sequence_details_map_;
         std::map<std::string, seqid_t> sequence_name_map_;
         std::string reference_;
-        AlignmentBlockStorage * storage_;
+        AlignmentBlockStorage *storage_;
+        cds_static::BitSequence *bit_sequence_;
 
         // The following methods are not allowed.
         WholeGenomeAlignment();

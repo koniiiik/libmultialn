@@ -1,3 +1,8 @@
+/*
+** This sample program loads a MAF file and generates an endless stream of
+** pairs (informant, reference position) that are guaranteed to map
+** correctly.
+*/
 #include <string>
 #include <vector>
 #include <ctime>
@@ -7,6 +12,7 @@
 #include <MafReader.h>
 #include <WholeGenomeAlignment.h>
 #include <BinSearchAlignmentBlockStorage.h>
+#include <RankAlignmentBlockStorage.h>
 #include <BitSequenceFactory.h>
 
 
@@ -22,7 +28,7 @@ string progname;
 void usage()
 {
     cerr << "Usage: " << progname << " <file.maf> <reference> "
-        "<percentage> RG2|RG3|RG4|RG20|RRR|SDArray" << endl;
+        "RG2|RG3|RG4|RG20|RRR|SDArray binsearch|rank" << endl;
     exit(1);
 }
 
@@ -41,6 +47,13 @@ BitSequenceFactory * GetSequenceFactory(const string &param)
     return new BitSequenceRGFactory(2);
 }
 
+AlignmentBlockStorage * GetAlignmentBlockStorage(const string &param)
+{
+    if (param == "binsearch")
+        return new BinSearchAlignmentBlockStorage();
+    return new RankAlignmentBlockStorage();
+}
+
 inline double clock_to_sec(clock_t time_interval)
 {
     return time_interval / (double)CLOCKS_PER_SEC;
@@ -54,19 +67,11 @@ int main(int argc, char **argv)
         usage();
     }
 
-    //string file_name = argv[1], reference = argv[2];
-    int percentage = atoi(argv[3]);
-    if (percentage <= 0 || percentage > 100)
-    {
-        usage();
-    }
-
     clock_t start = clock();
-    WholeGenomeAlignment wga(argv[2],
-            new BinSearchAlignmentBlockStorage());
+    WholeGenomeAlignment wga(argv[2], GetAlignmentBlockStorage(argv[4]));
 
     {
-        BitSequenceFactory * factory = GetSequenceFactory(argv[4]);
+        BitSequenceFactory * factory = GetSequenceFactory(argv[3]);
 
         maf_reader::ReadMafFile(argv[1], wga, *factory);
 
@@ -78,17 +83,8 @@ int main(int argc, char **argv)
             " seconds." << endl;
 
     size_t reference_size = wga.getReferenceSize();
-    size_t requested_attempts = (int)(reference_size * percentage / 100.0);
 
-    // We need to prepae a list of (informant, position) pairs that are
-    // guaranteed not to miss to be able to measure the performance of
-    // actual hits.
-    // We select the requested number of pairs by trying random positions.
-    vector<pair<string, size_t> > safe_maps;
-    safe_maps.reserve(requested_attempts + 47);
-
-    size_t misses = 0;
-    while (safe_maps.size() < requested_attempts)
+    while (1)
     {
         size_t position = rand() % reference_size;
         try
@@ -100,34 +96,10 @@ int main(int argc, char **argv)
                 delete mapping;
                 throw OutOfSequence();
             }
-            safe_maps.push_back(make_pair(mapping->begin()->first,
-                        position));
+            cout << mapping->begin()->first << "\t" << position << endl;
             delete mapping;
         }
         catch (OutOfSequence &e)
-        {
-            ++misses;
-        }
+        { }
     }
-    cerr << "Gathered " << requested_attempts << "; missed " << misses << endl;
-
-    start = clock();
-    for (size_t attempt = 0; attempt < safe_maps.size(); ++attempt)
-    {
-        try
-        {
-            wga.mapPositionToInformant(safe_maps[attempt].second,
-                    safe_maps[attempt].first);
-        }
-        catch (OutOfSequence &e)
-        {
-            cout << "OutOfSequence called on attempt " << attempt << endl;
-        }
-    }
-    end = clock();
-
-    double seconds = clock_to_sec(end - start);
-    cerr << "Attempts:\t" << requested_attempts << endl;
-    cerr << "Total secs:\t" << seconds << endl;
-    cerr << "Secs per attempt:\t" << seconds / requested_attempts << endl;
 }

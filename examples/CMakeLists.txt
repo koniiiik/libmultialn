@@ -1,7 +1,12 @@
-ADD_EXECUTABLE(random_positions
-    random_positions.cpp
+ADD_EXECUTABLE(generate_random_positions
+    generate_random_positions.cpp
 )
-TARGET_LINK_LIBRARIES(random_positions multialn)
+TARGET_LINK_LIBRARIES(generate_random_positions multialn)
+
+ADD_EXECUTABLE(map_positions
+    map_positions.cpp
+)
+TARGET_LINK_LIBRARIES(map_positions multialn)
 
 ADD_EXECUTABLE(bitseq_assess
     bitseq_assess.cpp

@@ -49,13 +49,3 @@ size_t SequenceDetails::alignmentToSequence(size_t index,
     }
     return position;
 }
-
-size_t SequenceDetails::rank(size_t index) const
-{
-    return this->sequence_->rank1(index);
-}
-
-size_t SequenceDetails::select(size_t index) const
-{
-    return this->sequence_->select1(index);
-}

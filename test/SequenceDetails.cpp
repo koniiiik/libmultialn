@@ -34,7 +34,16 @@ namespace
             }
     };
 
-    // Tests lookups on non-reversed strands
+    TEST_P(SequenceDetailsTest, StartEndSize)
+    {
+        EXPECT_EQ(47, forward->get_start());
+        EXPECT_EQ(16, forward->get_size());
+        EXPECT_EQ(62, forward->get_end());
+        EXPECT_EQ(47, backward->get_start());
+        EXPECT_EQ(16, backward->get_size());
+        EXPECT_EQ(32, backward->get_end());
+    }
+
     TEST_P(SequenceDetailsTest, ForwardLookup)
     {
         // The sequence is zero-based, sequence offset is taken into

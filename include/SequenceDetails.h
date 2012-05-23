@@ -44,14 +44,34 @@ class SequenceDetails
         size_t alignmentToSequence(size_t index,
                 IntervalBoundary boundary=INTERVAL_BEGIN) const;
 
-        size_t rank(size_t index) const;
-        size_t select(size_t index) const;
-
-        // TODO: This won't work if the strand is -.
+        /*
+        ** Returns the position of the first nucleotide in this region,
+        ** normalised to the forward strand's coordinate system.
+        */
         size_t get_start() const
         {
+            if (this->reverse_)
+            {
+                return this->get_src_size() - this->start_ - 1;
+            }
             return this->start_;
         }
+        /*
+        ** Returns the position of the last nucleotide in this region,
+        ** normalised to the forward strand's coordinate system.
+        */
+        size_t get_end() const
+        {
+            if (this->reverse_)
+            {
+                return this->get_start() - this->get_size() + 1;
+            }
+            return this->get_start() + this->get_size() - 1;
+        }
+        /*
+        ** Returns the length of the region covered by this sequence. This
+        ** equals the number of ones in our part of the bit sequence.
+        */
         size_t get_size() const
         {
             return this->sequence_->countOnes();

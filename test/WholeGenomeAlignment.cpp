@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <string>
 #include <vector>
+#include <utility>
 
 #include <WholeGenomeAlignment.h>
 #include <AlignmentBlockStorage.h>
@@ -13,6 +14,8 @@
 
 using std::string;
 using std::vector;
+using std::pair;
+using cds_static::BitSequence;
 
 namespace
 {
@@ -45,7 +48,7 @@ namespace
                         forward_id, "111111100000111");
                 block->addSequence(*seq);
                 delete seq;
-                seq = GenerateSequenceDetails(GetParam(), 150, 180, true,
+                seq = GenerateSequenceDetails(GetParam(), 50, 180, true,
                         reverse_id, "000111111111100");
                 block->addSequence(*seq);
                 delete seq;
@@ -60,8 +63,23 @@ namespace
                         forward_id, "111111100000111");
                 block->addSequence(*seq);
                 delete seq;
-                seq = GenerateSequenceDetails(GetParam(), 50, 180, true,
+                seq = GenerateSequenceDetails(GetParam(), 90, 180, true,
                         reverse_id, "000111111111100");
+                block->addSequence(*seq);
+                delete seq;
+                al->addBlock(block);
+
+                block = new AlignmentBlock();
+                seq = GenerateSequenceDetails(GetParam(), 50, 240, false,
+                        reference_id, "111110000011111");
+                block->addSequence(*seq);
+                delete seq;
+                seq = GenerateSequenceDetails(GetParam(), 40, 150, false,
+                        forward_id, "000111111111100");
+                block->addSequence(*seq);
+                delete seq;
+                seq = GenerateSequenceDetails(GetParam(), 70, 180, true,
+                        reverse_id, "111111100000111");
                 block->addSequence(*seq);
                 delete seq;
                 al->addBlock(block);
@@ -128,6 +146,48 @@ namespace
         expected[3] = "extra";
         EXPECT_EQ(expected, *seqlist);
         delete seqlist;
+    }
+
+    // TODO: Strengthen this; probably needs more complex test cases.
+    TEST_P(WholeGenomeAlignmentTest, RegionMaps)
+    {
+        pair<size_t, size_t> result;
+
+        // A few obviously invalid queries.
+        EXPECT_THROW(al->mapRegionToInformant(10, 70, "nonexistent"),
+                SequenceDoesNotExist);
+        EXPECT_THROW(al->mapRegionToInformant(2, 5, "forwardinf"),
+                OutOfSequence);
+        EXPECT_THROW(al->mapRegionToInformant(42, 47, "forwardinf"),
+                OutOfSequence);
+        // Not a colinear sequence.
+        EXPECT_THROW(al->mapRegionToInformant(20, 54, "reverseinf"),
+                MappingDoesNotExist);
+
+        // Mapping within a single block; if the start is before the first
+        // block, start at the first one.
+        EXPECT_NO_THROW(result = al->mapRegionToInformant(10, 25,
+                    "forwardinf"));
+        EXPECT_EQ(10, result.first);
+        EXPECT_EQ(16, result.second);
+
+        // Spanning multiple blocks.
+        EXPECT_NO_THROW(result = al->mapRegionToInformant(21, 33,
+                    "forwardinf"));
+        EXPECT_EQ(11, result.first);
+        EXPECT_EQ(33, result.second);
+
+        // Spanning multiple blocks; the end is in the last but one.
+        EXPECT_NO_THROW(result = al->mapRegionToInformant(31, 51,
+                    "forwardinf"));
+        EXPECT_EQ(31, result.first);
+        EXPECT_EQ(39, result.second);
+
+        // Reverse alignment, multiple blocks.
+        EXPECT_NO_THROW(result = al->mapRegionToInformant(20, 34,
+                    "reverseinf"));
+        EXPECT_EQ(129, result.first);
+        EXPECT_EQ(88, result.second);
     }
 
     INSTANTIATE_BITSEQ_TEST_P(WholeGenomeAlignmentTest);

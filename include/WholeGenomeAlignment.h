@@ -12,6 +12,15 @@
 #include <MultialnConstants.h>
 
 
+class MappingDoesNotExist: public std::exception
+{
+    public:
+        MappingDoesNotExist() throw(): exception() {};
+        MappingDoesNotExist(const MappingDoesNotExist &other) throw():
+            exception(other)
+        { }
+};
+
 class WholeGenomeAlignment
 {
     public:
@@ -54,6 +63,18 @@ class WholeGenomeAlignment
         */
         PositionMapping * mapPositionToAll(size_t position,
                 IntervalBoundary boundary=INTERVAL_BEGIN) const;
+
+        /*
+        ** Maps a region on the forward strand of the reference sequence
+        ** to a region on the given informant.
+        **
+        ** Throws MappingDoesNotExist in case the mapped region is not
+        ** colinear to the reference region.
+        **
+        ** TODO: make the exceptions thrown at least a little bit sane
+        */
+        std::pair<size_t, size_t> mapRegionToInformant(size_t region_start,
+                size_t region_end, const std::string &informant);
 
         /*
         ** Returns the size of the specified sequence. Throws

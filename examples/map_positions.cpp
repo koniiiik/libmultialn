@@ -31,7 +31,7 @@ string progname;
 void usage()
 {
     cerr << "Usage: " << progname << " <file.maf> <reference> "
-        "RG2|RG3|RG4|RG20|RRR|SDArray binsearch|rank" << endl;
+        "RG2|RG3|RG4|RG20|RRR|SDArray|dummy binsearch|rank" << endl;
     exit(1);
 }
 
@@ -39,6 +39,8 @@ BitSequenceFactory * GetSequenceFactory(const string &param)
 {
     if (param == "RRR")
         return new BitSequenceRRRFactory();
+    if (param == "dummy")
+        return new BitSequenceDummyFactory();
     if (param == "SDArray")
         return new BitSequenceSDArrayFactory();
     if (param == "RG3")

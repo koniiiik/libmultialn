@@ -4,6 +4,8 @@
 #include <BitSequence.h>
 #include <BitString.h>
 
+#include <BitSequenceDummy.h>
+
 
 class BitSequenceFactory
 {
@@ -65,6 +67,22 @@ class BitSequenceSDArrayFactory: public BitSequenceFactory
                 const cds_utils::BitString &str) const
         {
             return new cds_static::BitSequenceSDArray(str);
+        }
+};
+
+class BitSequenceDummyFactory: public BitSequenceFactory
+{
+    public:
+        BitSequenceDummyFactory()
+        { }
+
+        virtual ~BitSequenceDummyFactory()
+        { }
+
+        virtual cds_static::BitSequence * getInstance(
+                const cds_utils::BitString &) const
+        {
+            return new BitSequenceDummy();
         }
 };
 

@@ -5,6 +5,7 @@
 */
 #include <string>
 #include <vector>
+#include <set>
 #include <ctime>
 #include <iostream>
 #include <utility>
@@ -18,17 +19,20 @@
 
 using std::string;
 using std::vector;
+using std::set;
 using std::clock;
 using std::max;
 using std::min;
 using std::pair;
+using maf_reader::ReadMafFile;
 
 string progname;
 
 void usage()
 {
     cerr << "Usage: " << progname << " <file.maf> <reference> "
-        "RG2|RG3|RG4|RG20|RRR|SDArray binsearch|rank" << endl;
+        "RG2|RG3|RG4|RG20|RRR|SDArray binsearch|rank "
+        "[seqname seqname ...]" << endl;
     exit(1);
 }
 
@@ -62,7 +66,7 @@ inline double clock_to_sec(clock_t time_interval)
 int main(int argc, char **argv)
 {
     progname = argv[0];
-    if (argc != 5)
+    if (argc < 5)
     {
         usage();
     }
@@ -71,9 +75,23 @@ int main(int argc, char **argv)
     WholeGenomeAlignment wga(argv[2], GetAlignmentBlockStorage(argv[4]));
 
     {
+        set<string> filter;
+        filter.insert(argv[2]);
+        for (int i = 5; i < argc; ++i)
+        {
+            filter.insert(argv[i]);
+        }
+
         BitSequenceFactory * factory = GetSequenceFactory(argv[3]);
 
-        maf_reader::ReadMafFile(argv[1], wga, *factory);
+        if (filter.size() > 1)
+        {
+            ReadMafFile(argv[1], wga, *factory, &filter);
+        }
+        else
+        {
+            ReadMafFile(argv[1], wga, *factory);
+        }
 
         delete factory;
     }

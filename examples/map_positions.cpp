@@ -3,9 +3,6 @@
 ** maps the positions given on stdin and prints timing statistics.
 */
 
-#include <sys/time.h>
-#include <sys/resource.h>
-
 #include <string>
 #include <vector>
 #include <ctime>
@@ -17,6 +14,8 @@
 #include <BinSearchAlignmentBlockStorage.h>
 #include <RankAlignmentBlockStorage.h>
 #include <BitSequenceFactory.h>
+
+#include "referenced_memory_size.h"
 
 
 using std::string;
@@ -72,10 +71,8 @@ int main(int argc, char **argv)
         usage();
     }
 
+    size_t referenced_before = get_referenced_memory_size();
     clock_t start = clock();
-    struct rusage self_usage;
-    getrusage(RUSAGE_SELF, &self_usage);
-    size_t rss_before = self_usage.ru_maxrss;
     WholeGenomeAlignment wga(argv[2], GetAlignmentBlockStorage(argv[4]));
 
     {
@@ -112,14 +109,15 @@ int main(int argc, char **argv)
     }
     end = clock();
 
-    getrusage(RUSAGE_SELF, &self_usage);
-    size_t rss_diff = self_usage.ru_maxrss;
-    rss_diff -= rss_before;
+    size_t referenced_after = get_referenced_memory_size();
+    size_t referenced_diff = referenced_after - referenced_before;
 
     double seconds = clock_to_sec(end - start);
     cerr << "Attempts:\t" << attempts << endl;
     cerr << "Missed:\t" << misses << endl;
     cerr << "Total secs:\t" << seconds << endl;
     cerr << "Secs per attempt:\t" << seconds / attempts << endl;
-    cerr << "Resident-set diff:\t" << rss_diff << " kb" << endl;
+    cerr << "Referenced before:\t" << referenced_before << endl;
+    cerr << "Referenced after:\t" << referenced_after << endl;
+    cerr << "Referenced diff:\t" << referenced_diff << endl;
 }

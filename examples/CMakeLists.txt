@@ -5,6 +5,8 @@ TARGET_LINK_LIBRARIES(generate_random_positions multialn)
 
 ADD_EXECUTABLE(map_positions
     map_positions.cpp
+    referenced_memory_size.h
+    referenced_memory_size.cpp
 )
 TARGET_LINK_LIBRARIES(map_positions multialn)
 

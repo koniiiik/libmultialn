@@ -103,7 +103,13 @@ int main(int argc, char **argv)
         ++attempts;
         try
         {
-            wga.mapPositionToInformant(position, informant);
+            position = wga.mapPositionToInformant(position, informant);
+            // Output the result in BED format.
+            size_t dot = informant.find('c');
+            if (dot < informant.size())
+                informant = informant.substr(dot + 1);
+            cout << informant << "\t" << position << "\t" << position + 1
+                 << endl;
         }
         catch (OutOfSequence &e)
         {

@@ -82,6 +82,13 @@ int main(int argc, char **argv)
 
         delete factory;
     }
+    // Make the block storage perform the preprocessing.
+    try
+    {
+        wga.mapPositionToInformant(wga.getReferenceSize() / 2, "any");
+    }
+    catch (...)
+    { }
     clock_t end = clock();
     cerr.precision(10);
     cerr << "Parsed MAF in " << clock_to_sec(end - start) <<

@@ -106,8 +106,12 @@ int main(int argc, char **argv)
             pair<size_t, size_t> result = wga.mapRegionToInformant(
                     region_start, region_end, informant);
             // Output the result in BED format.
-            cout << informant << "\t" << result.first << "\t"
-                 << result.second + 1 << endl;
+            if (result.first > result.second)
+                cout << informant << "\t" << result.second << "\t"
+                     << result.first + 1 << endl;
+            else
+                cout << informant << "\t" << result.first << "\t"
+                     << result.second + 1 << endl;
         }
         catch (OutOfSequence &e)
         {
